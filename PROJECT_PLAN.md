@@ -76,7 +76,13 @@ The brief requires that all business content be editable from admin and stored i
 
 **Known gaps (by design):** all content is placeholder data; cart/checkout/account/product-detail pages are labelled scaffolds; contact form and newsletter need the backend; no hero/product photos yet.
 
-### PHASE 2 — Supabase configuration, SQL migrations, database, RLS, storage  ⬜
+### PHASE 2 — Supabase configuration, SQL migrations, database, RLS, storage  ✅ (pending your approval; not yet applied to the live project)
+- [x] 6 migrations (schema, functions/triggers, RLS, storage, seed)
+- [x] 35 automated database/RLS tests on real PostgreSQL (PGlite)
+- [x] Supabase client (`src/lib/supabase.ts`), `SUPABASE_SETUP.md`, `DATABASE_SCHEMA.md`
+- [ ] **You:** apply `supabase/apply_all.sql` in the SQL Editor and add the anon key to `.env.local`
+- [ ] Verify against the live project after you apply it
+
 ### PHASE 3 — Authentication, customer profiles, admin authorization  ⬜
 ### PHASE 4 — Product catalog, categories, variants, inventory  ⬜
 ### PHASE 5 — Cart, coupons, checkout (server-side pricing via Edge Functions)  ⬜

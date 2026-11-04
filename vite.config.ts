@@ -9,5 +9,5 @@ export default defineConfig({
   },
   server: { port: 5173 },
   build: { sourcemap: false, target: 'es2020' },
-  test: { environment: 'node', include: ['src/**/*.test.{ts,tsx}'] },
+  test: { environment: 'node', include: ['src/**/*.test.{ts,tsx}', 'supabase/tests/**/*.test.ts'], testTimeout: 30000 },
 });
