@@ -1,4 +1,16 @@
 import { Route, Routes } from 'react-router-dom';
+import { AuthProvider } from '@/context/AuthContext';
+import { RequireAuth, RequireStaff } from '@/components/auth/Guards';
+import Login from '@/pages/auth/Login';
+import Register from '@/pages/auth/Register';
+import ForgotPassword from '@/pages/auth/ForgotPassword';
+import ResetPassword from '@/pages/auth/ResetPassword';
+import AccountLayout from '@/pages/account/AccountLayout';
+import Overview from '@/pages/account/Overview';
+import Profile from '@/pages/account/Profile';
+import Addresses from '@/pages/account/Addresses';
+import AdminLayout from '@/pages/admin/AdminLayout';
+import AdminHome from '@/pages/admin/AdminHome';
 import { Layout } from '@/components/layout/Layout';
 import Home from '@/pages/Home';
 import NotFound from '@/pages/NotFound';
@@ -16,6 +28,7 @@ import {
 
 export default function App() {
   return (
+    <AuthProvider>
     <Routes>
       <Route element={<Layout />}>
         <Route index element={<Home />} />
@@ -38,14 +51,22 @@ export default function App() {
         <Route path="order-confirmation" element={<Scaffold title="Order Confirmation" phase={5} phaseLabel="Cart & Checkout" description="Order confirmation is available once checkout is live." />} />
         <Route path="track-order" element={<Scaffold title="Order Tracking" phase={7} phaseLabel="Orders" description="Order tracking is built in Phase 7." />} />
 
-        {/* Account (Phase 3 / 7) */}
-        <Route path="login" element={<Scaffold title="Customer Login" phase={3} phaseLabel="Authentication" description="Secure sign-in with Supabase Auth is built in Phase 3." />} />
-        <Route path="register" element={<Scaffold title="Create Account" phase={3} phaseLabel="Authentication" description="Customer registration is built in Phase 3." />} />
-        <Route path="forgot-password" element={<Scaffold title="Forgot Password" phase={3} phaseLabel="Authentication" description="Password reset is built in Phase 3." />} />
-        <Route path="account" element={<Scaffold title="My Account" phase={3} phaseLabel="Authentication" description="The customer dashboard is built in Phase 3, with order history in Phase 7." />} />
-        <Route path="account/orders" element={<Scaffold title="My Orders" phase={7} phaseLabel="Orders" description="Order history is built in Phase 7." />} />
-        <Route path="account/wishlist" element={<Scaffold title="My Wishlist" phase={4} phaseLabel="Catalogue" description="The wishlist is built in Phase 4, alongside customer accounts." />} />
-        <Route path="account/addresses" element={<Scaffold title="My Addresses" phase={3} phaseLabel="Authentication" description="Address management is built in Phase 3." />} />
+        {/* Authentication */}
+        <Route path="login" element={<Login />} />
+        <Route path="register" element={<Register />} />
+        <Route path="forgot-password" element={<ForgotPassword />} />
+        <Route path="reset-password" element={<ResetPassword />} />
+
+        {/* Customer account (signed-in only) */}
+        <Route path="account" element={<RequireAuth />}>
+          <Route element={<AccountLayout />}>
+            <Route index element={<Overview />} />
+            <Route path="profile" element={<Profile />} />
+            <Route path="addresses" element={<Addresses />} />
+            <Route path="orders" element={<Scaffold embedded title="My Orders" phase={7} phaseLabel="Orders" description="Order history is built in Phase 7." />} />
+            <Route path="wishlist" element={<Scaffold embedded title="My Wishlist" phase={4} phaseLabel="Catalogue" description="The wishlist is built in Phase 4, alongside the product catalogue." />} />
+          </Route>
+        </Route>
 
         {/* Information */}
         <Route path="about" element={<AboutPage />} />
@@ -58,6 +79,14 @@ export default function App() {
 
         <Route path="*" element={<NotFound />} />
       </Route>
+      {/* Admin (staff only; own layout, no storefront chrome) */}
+      <Route path="admin" element={<RequireStaff />}>
+        <Route element={<AdminLayout />}>
+          <Route index element={<AdminHome />} />
+          <Route path="*" element={<AdminHome />} />
+        </Route>
+      </Route>
     </Routes>
+    </AuthProvider>
   );
 }

@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.3.0 — Phase 3 (2026-11-04)
+- Supabase Auth: sign in, register, forgot/reset password, sign out.
+- Customer account: overview, profile, saved addresses (64-district list, BD phone validation).
+- Route guards; role-gated `/admin` shell with 27 role-filtered sections.
+- Open-redirect-safe post-login redirects; friendly auth error messages; no email enumeration on password reset.
+- 39 new tests (114 total).
+
 ## 0.2.0 — Phase 2 (2026-11-04)
 - Added 6 SQL migrations: 33 tables, RLS everywhere, storage buckets/policies, baseline seed.
 - Payment verification only via `verify_payment()`; stock functions service-role only; last super admin protected.

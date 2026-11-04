@@ -83,7 +83,16 @@ The brief requires that all business content be editable from admin and stored i
 - [ ] **You:** apply `supabase/apply_all.sql` in the SQL Editor and add the anon key to `.env.local`
 - [ ] Verify against the live project after you apply it
 
-### PHASE 3 — Authentication, customer profiles, admin authorization  ⬜
+### PHASE 3 — Authentication, customer profiles, admin authorization  ✅ (pending your approval; live sign-in not yet tested)
+- [x] AuthContext (session, roles from `user_roles`), sign in / sign up / sign out / password reset
+- [x] Pages: Login, Register, Forgot Password, Reset Password
+- [x] Customer account: Overview, Profile, Addresses (add/edit/delete/default)
+- [x] Route guards (`RequireAuth`, `RequireStaff`), open-redirect-safe return paths
+- [x] `/admin` shell gated by role, sections filtered per role (screens arrive in later phases)
+- [x] 39 new automated tests (validation, roles, guards)
+- [ ] **You:** configure Supabase Auth URLs (see SUPABASE_SETUP.md section 4) and test sign-in locally
+- Not in this phase: wishlist (Phase 4), orders (Phase 7), admin screens (Phases 4-8), guest checkout (Phase 5)
+
 ### PHASE 4 — Product catalog, categories, variants, inventory  ⬜
 ### PHASE 5 — Cart, coupons, checkout (server-side pricing via Edge Functions)  ⬜
 ### PHASE 6 — Delivery management; bKash / Nagad / Upay manual advance payment  ⬜

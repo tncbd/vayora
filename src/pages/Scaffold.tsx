@@ -8,18 +8,20 @@ interface Props {
   description: string;
   phase: number;
   phaseLabel: string;
+  /** Render only the body (used inside the account layout, which has its own header). */
+  embedded?: boolean;
 }
 
 /**
  * Honest placeholder for pages whose functionality depends on later phases
  * (auth, cart, checkout, orders…). It performs no fake actions.
  */
-export default function Scaffold({ title, description, phase, phaseLabel }: Props) {
+export default function Scaffold({ title, description, phase, phaseLabel, embedded }: Props) {
   usePageTitle(title);
   return (
     <>
-      <PageHeader title={title} crumbs={[{ label: title }]} />
-      <div className="container-page py-16 text-center sm:py-24">
+      {!embedded && <PageHeader title={title} crumbs={[{ label: title }]} />}
+      <div className={embedded ? 'py-10 text-center' : 'container-page py-16 text-center sm:py-24'}>
         <p className="eyebrow">Phase {phase} · {phaseLabel}</p>
         <p className="mx-auto mt-4 max-w-md text-sm leading-relaxed text-muted">{description}</p>
         <div className="mt-8 flex justify-center gap-3">

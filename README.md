@@ -4,7 +4,7 @@ Style for Everyone. Fashion for Every Moment.
 
 Premium e-commerce storefront and admin for a Bangladesh fashion brand (BDT ৳, Cash on Delivery, optional advance delivery charge via bKash / Nagad / Upay with manual verification).
 
-**Status:** Phase 1 of 10 complete (UI foundation). See [PROJECT_PLAN.md](PROJECT_PLAN.md). Products and content are sample placeholders until Supabase is connected in Phase 2.
+**Status:** Phase 3 of 10 built (UI, database, authentication). See [PROJECT_PLAN.md](PROJECT_PLAN.md). Products and content are sample placeholders until Supabase is connected in Phase 2.
 
 ## Stack
 React 18 · Vite 7 · TypeScript · Tailwind CSS 3 · React Router 7 · React Hook Form · Zod 4 · Supabase (from Phase 2) · Netlify

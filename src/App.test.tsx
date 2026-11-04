@@ -46,4 +46,31 @@ describe('route smoke tests', () => {
     expect(render('/search?q=panjabi')).toContain('Embroidered Cotton Panjabi');
     expect(render('/search?q=zzzz')).toContain('No products matched');
   });
+
+  it('auth pages render their forms', () => {
+    expect(render('/login')).toContain('Sign In');
+    expect(render('/login')).toContain('Forgot password?');
+    expect(render('/register')).toContain('Create Account');
+    expect(render('/register')).toContain('Confirm password');
+    expect(render('/forgot-password')).toContain('Send Reset Link');
+    expect(render('/reset-password')).toContain('Reset Password');
+  });
+
+  it('protected routes never render protected content for a visitor', () => {
+    for (const url of ['/account', '/account/profile', '/account/addresses', '/account/orders']) {
+      const html = render(url);
+      expect(html, url).not.toContain('Welcome,');
+      expect(html, url).not.toContain('Save Address');
+      expect(html, url).toMatch(/Loading…|Accounts unavailable/); // waiting for session, or no backend
+    }
+  });
+
+  it('admin never renders for a visitor and has no storefront chrome', () => {
+    for (const url of ['/admin', '/admin/products', '/admin/anything']) {
+      const html = render(url);
+      expect(html, url).not.toContain('Admin Dashboard');
+      expect(html, url).not.toContain('Phase 4'); // section list stays hidden
+      expect(html, url).toMatch(/Loading…|Accounts unavailable/);
+    }
+  });
 });

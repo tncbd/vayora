@@ -32,8 +32,9 @@ select id, 'super_admin' from auth.users where email = 'YOUR-EMAIL@example.com';
 3. Only a Super Admin can grant further roles afterwards. The last Super Admin cannot be removed.
 
 ## 4. Auth settings (Dashboard -> Authentication)
-- Site URL: your Netlify/production URL; add `http://localhost:5173` to Redirect URLs for development.
-- Email confirmation: keep ON for production.
+- **URL Configuration:** Site URL = your production URL (use `http://localhost:5173` until deployed). Add Redirect URLs: `http://localhost:5173/**` and, later, your Netlify URL `/**`. Password-reset and email-confirm links only work for listed URLs.
+- Email confirmation: keep ON for production. Supabase's built-in email sender is heavily rate-limited; configure your own SMTP before launch.
+- Users: Authentication -> Users shows registered customers. Role changes are done only through SQL by a Super Admin (Phase 8 adds a screen).
 
 ## 5. Storage
 Buckets are created by the migration: `product-images`, `banners`, `site-assets`, `review-images` (public) and `payment-proofs` (private). File size and type limits are set per bucket.
