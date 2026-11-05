@@ -1,6 +1,6 @@
-import { Link, Outlet, useNavigate } from 'react-router-dom';
+import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
-import { ROLE_LABELS } from '@/lib/roles';
+import { ROLE_LABELS, sectionsFor } from '@/lib/roles';
 import { usePageTitle } from '@/hooks/usePageTitle';
 
 /** Admin pages use their own chrome (no storefront header/footer). */
@@ -8,6 +8,8 @@ export default function AdminLayout() {
   usePageTitle('Admin');
   const { user, roles, signOut } = useAuth();
   const navigate = useNavigate();
+  // one link per finished screen (several sections can share a screen)
+  const links = [...new Map(sectionsFor(roles).filter((x) => x.path).map((x) => [x.path as string, x.label])).entries()];
   return (
     <div className="min-h-screen bg-secondary">
       <header className="border-b border-line bg-primary text-white">
@@ -29,6 +31,14 @@ export default function AdminLayout() {
           </div>
         </div>
       </header>
+      <nav aria-label="Admin" className="border-b border-line bg-white">
+        <div className="container-page flex flex-wrap gap-x-6 gap-y-2 py-3 text-xs font-medium uppercase tracking-[0.14em]">
+          <NavLink to="/admin" end className={({ isActive }) => (isActive ? 'text-accent-dark' : 'text-primary hover:text-accent-dark')}>Overview</NavLink>
+          {links.map(([path, label]) => (
+            <NavLink key={path} to={path} className={({ isActive }) => (isActive ? 'text-accent-dark' : 'text-primary hover:text-accent-dark')}>{label}</NavLink>
+          ))}
+        </div>
+      </nav>
       <main className="container-page py-8 sm:py-10">
         <Outlet />
       </main>

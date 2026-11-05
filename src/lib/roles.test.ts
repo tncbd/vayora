@@ -59,3 +59,11 @@ describe('safeRedirect', () => {
     (v) => expect(safeRedirect(v)).toBe('/account'),
   );
 });
+
+describe('implemented sections', () => {
+  it('only link finished screens, and every linked path is covered by the same role rules', () => {
+    const linked = ADMIN_SECTIONS.filter((s) => s.path);
+    expect(linked.map((s) => s.key).sort()).toEqual(['categories', 'inventory', 'products', 'subcategories', 'variants']);
+    for (const s of linked) expect(s.path).toMatch(/^\/admin\/[a-z-]+$/);
+  });
+});

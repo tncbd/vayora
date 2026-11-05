@@ -1,23 +1,23 @@
-import { Star } from 'lucide-react';
-import { reviews } from '@/data/placeholder';
+import { getLatestReviews } from '@/lib/catalogApi';
+import { isSupabaseConfigured } from '@/lib/supabase';
+import { useAsync } from '@/hooks/useAsync';
 import { SectionHeading } from '@/components/ui/SectionHeading';
+import { StarRating } from '@/components/product/StarRating';
 
+/** Shows only real, approved customer reviews; hidden while there are none. */
 export function Reviews() {
-  if (reviews.length === 0) return null;
+  const { data } = useAsync(() => (isSupabaseConfigured ? getLatestReviews(3) : Promise.resolve([])), []);
+  if (!data || data.length === 0) return null;
   return (
     <section className="container-page py-16 lg:py-24">
       <SectionHeading align="center" eyebrow="Testimonials" title="What Our Customers Say" />
       <div className="grid gap-5 md:grid-cols-3">
-        {reviews.map((r) => (
+        {data.map((r) => (
           <figure key={r.id} className="border border-line bg-white p-7">
-            <div className="flex gap-0.5 text-accent" role="img" aria-label={`${r.rating} out of 5 stars`}>
-              {Array.from({ length: 5 }).map((_, i) => (
-                <Star key={i} size={15} fill={i < r.rating ? 'currentColor' : 'none'} />
-              ))}
-            </div>
+            <StarRating value={r.rating} size={15} />
             <blockquote className="mt-4 text-sm leading-relaxed text-ink">{r.comment}</blockquote>
             <figcaption className="mt-5 text-xs uppercase tracking-[0.15em] text-muted">
-              {r.customerName} · {r.location}
+              {r.reviewerName}
             </figcaption>
           </figure>
         ))}

@@ -20,5 +20,12 @@
 - Post-login redirects restricted to same-site paths. Password reset never reveals whether an email exists.
 - Rate limiting for sign-in/reset comes from Supabase Auth; review limits in the dashboard before launch.
 
+## Catalogue (Phase 4)
+- Storefront reads only ACTIVE products through read-only views/functions; draft products, exact stock and reservations are never exposed to visitors.
+- Views grant SELECT only (all write privileges revoked; verified by test).
+- Search/filter input is sanitised before reaching the database; admin CSV export neutralises spreadsheet formula injection.
+- Admin catalogue writes run as the signed-in staff member, so row-level security (not the UI) decides what is allowed.
+- Photo uploads are type- and size-checked in the browser and by the storage bucket.
+
 ## Planned rules
 RLS on every sensitive table; server-side recalculation of prices, discounts, delivery and totals; backend-enforced roles; private `payment-proofs` bucket; audit logs; service role key only in Edge Functions.

@@ -9,5 +9,5 @@ export default defineConfig({
   },
   server: { port: 5173 },
   build: { sourcemap: false, target: 'es2020' },
-  test: { environment: 'node', include: ['src/**/*.test.{ts,tsx}', 'supabase/tests/**/*.test.ts'], testTimeout: 30000 },
+  test: { environment: 'node', env: { VITE_SUPABASE_URL: '', VITE_SUPABASE_ANON_KEY: '' }, include: ['src/**/*.test.{ts,tsx}', 'supabase/tests/**/*.test.ts'], testTimeout: 30000 },
 });

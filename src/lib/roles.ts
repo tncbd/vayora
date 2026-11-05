@@ -23,6 +23,8 @@ export interface AdminSection {
   label: string;
   roles: readonly AppRole[];
   phase: number; // phase in which the real screen is built
+  /** Route of the finished screen; absent while the screen is not built yet. */
+  path?: string;
 }
 
 const SA: AppRole[] = ['super_admin'];
@@ -33,11 +35,11 @@ const PAY: AppRole[] = ['super_admin', 'admin', 'payment_manager'];
 
 export const ADMIN_SECTIONS: readonly AdminSection[] = [
   { key: 'dashboard', label: 'Dashboard', roles: APP_ROLES, phase: 8 },
-  { key: 'products', label: 'Products', roles: CAT, phase: 4 },
-  { key: 'categories', label: 'Categories', roles: CAT, phase: 4 },
-  { key: 'subcategories', label: 'Subcategories', roles: CAT, phase: 4 },
-  { key: 'variants', label: 'Product Variants', roles: CAT, phase: 4 },
-  { key: 'inventory', label: 'Inventory', roles: CAT, phase: 4 },
+  { key: 'products', label: 'Products', roles: CAT, phase: 4, path: '/admin/products' },
+  { key: 'categories', label: 'Categories', roles: CAT, phase: 4, path: '/admin/categories' },
+  { key: 'subcategories', label: 'Subcategories', roles: CAT, phase: 4, path: '/admin/categories' },
+  { key: 'variants', label: 'Product Variants', roles: CAT, phase: 4, path: '/admin/products' },
+  { key: 'inventory', label: 'Inventory', roles: CAT, phase: 4, path: '/admin/inventory' },
   { key: 'orders', label: 'Orders', roles: ORD, phase: 7 },
   { key: 'payment-verification', label: 'Payment Verification', roles: PAY, phase: 6 },
   { key: 'customers', label: 'Customers', roles: ORD, phase: 8 },

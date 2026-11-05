@@ -1,6 +1,6 @@
 import { Link, Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
-import { resolveGuard } from '@/lib/roles';
+import { canAccess, resolveGuard } from '@/lib/roles';
 import { ButtonLink } from '@/components/ui/Button';
 
 export function FullPageMessage({ title, text, children }: { title: string; text?: string; children?: React.ReactNode }) {
@@ -13,7 +13,7 @@ export function FullPageMessage({ title, text, children }: { title: string; text
   );
 }
 
-function Guard({ requireStaff }: { requireStaff?: boolean }) {
+function Guard({ requireStaff, section }: { requireStaff?: boolean; section?: string }) {
   const { loading, user, roles, configured } = useAuth();
   const location = useLocation();
 
@@ -28,7 +28,8 @@ function Guard({ requireStaff }: { requireStaff?: boolean }) {
     );
   }
 
-  const result = resolveGuard({ loading, signedIn: !!user, roles, requireStaff });
+  let result = resolveGuard({ loading, signedIn: !!user, roles, requireStaff: requireStaff || !!section });
+  if (result === 'allow' && section && !canAccess(roles, section)) result = 'forbidden';
   if (result === 'loading') {
     return (
       <div className="flex min-h-[50vh] items-center justify-center" role="status" aria-live="polite">
@@ -56,3 +57,5 @@ function Guard({ requireStaff }: { requireStaff?: boolean }) {
 export const RequireAuth = () => <Guard />;
 /** Signed-in AND holding at least one admin role. (UI convenience only; the database enforces the real rules.) */
 export const RequireStaff = () => <Guard requireStaff />;
+/** Staff whose role grants access to one admin section (e.g. 'products'). Database rules still apply on top. */
+export const RequireSection = ({ section }: { section: string }) => <Guard section={section} />;

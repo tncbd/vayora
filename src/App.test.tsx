@@ -29,22 +29,24 @@ describe('route smoke tests', () => {
     expect(html).toContain('VAYORA');
   });
 
-  it('renders the 404 page for unknown routes, including /admin before Phase 3', () => {
+  it('renders the 404 page for unknown routes', () => {
     expect(render('/does-not-exist')).toContain('Page not found');
     expect(render('/category/not-a-real-category')).toContain('Page not found');
-    expect(render('/collections/not-real')).toContain('Page not found');
   });
 
-  it('homepage contains the required sections', () => {
+  it('homepage shows fixed sections but no invented products or reviews', () => {
     const html = render('/');
-    for (const text of ['New Arrivals', 'Best Sellers', 'Trending Products', 'Winter Collection', 'Featured Products', 'What Our Customers Say', 'Join the VAYORA List', "Women&#x27;s Collection"]) {
-      expect(html).toContain(text);
+    for (const text of ['Join the VAYORA List', 'Women&#x27;s Collection', 'Men&#x27;s Collection']) expect(html).toContain(text);
+    // product rails and testimonials only appear once real data exists
+    for (const text of ['Best Sellers', 'Trending Products', 'Featured Products', 'What Our Customers Say', 'Sample Customer', 'Embroidered Cotton Panjabi']) {
+      expect(html).not.toContain(text);
     }
   });
 
-  it('search finds sample products and handles no match', () => {
-    expect(render('/search?q=panjabi')).toContain('Embroidered Cotton Panjabi');
-    expect(render('/search?q=zzzz')).toContain('No products matched');
+  it('search page renders its heading and never invents results', () => {
+    const html = render('/search?q=panjabi');
+    expect(html).toContain('Results for');
+    expect(html).not.toContain('Embroidered Cotton Panjabi');
   });
 
   it('auth pages render their forms', () => {

@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronDown, X } from 'lucide-react';
-import { navItems, siteSettings } from '@/data/placeholder';
+import { siteSettings } from '@/data/placeholder';
+import { useNavItems } from '@/hooks/useCategories';
 import { cn } from '@/lib/cn';
 
 export function MobileNav({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const navItems = useNavItems();
   const [expanded, setExpanded] = useState<string | null>(null);
 
   useEffect(() => {

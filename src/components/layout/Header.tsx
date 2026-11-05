@@ -1,13 +1,14 @@
 import { useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { Heart, Menu, Search, ShoppingBag, User } from 'lucide-react';
-import { navItems } from '@/data/placeholder';
+import { useNavItems } from '@/hooks/useCategories';
 import { MobileNav } from './MobileNav';
 import { SearchOverlay } from './SearchOverlay';
 
 const iconBtn = 'relative p-2 text-primary transition-colors hover:text-accent-dark';
 
 export function Header() {
+  const navItems = useNavItems();
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
 

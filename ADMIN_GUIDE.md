@@ -1,10 +1,25 @@
 # Admin Guide
 
-**Status: access control only (Phase 3). Management screens arrive in Phases 4-8.**
+Sign in at `/login`, then open `/admin`. Each role sees only its own sections; the database enforces the same limits.
 
-## Signing in
-1. Open `/login` and sign in with a staff account.
-2. Open `/admin` (or My Account -> Admin). Visitors are sent to sign-in; signed-in customers without a role see "No access".
+## Ready now (Phase 4)
+| Screen | Who | What you can do |
+|---|---|---|
+| **Products** `/admin/products` | Super Admin, Admin, Product Manager | Search by name/SKU, filter by status and category, add, edit, duplicate (copies as a draft), delete, bulk activate/deactivate/feature/delete, export CSV |
+| **Product page** | same | Name, slug, SKU, descriptions, category/subcategory, gender, regular/selling price (or discount %), status, flags, collections, SEO |
+| **Photos** (on the product page) | same | Upload several (JPG/PNG/WebP/AVIF, max 5 MB), choose the main photo, reorder, alt text, delete |
+| **Variants & stock** (on the product page) | same | Generate size x colour variants, each with its own SKU, optional price, active flag, quantity and low-stock level |
+| **Categories / Subcategories** `/admin/categories` | same | Unlimited nested categories; hide or delete (blocked while in use) |
+| **Inventory** `/admin/inventory` | same | Stock for every variant, low/out-of-stock filters, quick quantity edits |
+
+Notes
+- Only products with status **Active** show on the storefront. A product with no variants in stock shows as unavailable.
+- "Reserved" stock is held for open orders; you cannot set quantity below it.
+- Flags (New Arrival, Best Seller, Trending, Featured) automatically place a product in those collections.
+- Product Variants and Subcategories are managed inside the Products and Categories screens.
+
+## Not built yet
+Orders, payment verification, customers, delivery zones, coupons, banners, homepage builder, reviews moderation, settings, reports (Phases 5-9). They are listed on the admin overview with their phase.
 
 ## Roles
 | Role | Area |
@@ -15,11 +30,8 @@
 | Product Manager | Products, categories, variants, inventory |
 | Payment Manager | Payment verification, payment settings |
 
-The dashboard lists only the sections your role can use. These limits are enforced in the database, not just the screen.
-
-## Granting a role (Super Admin, until the Phase 8 screen exists)
+Granting a role (Super Admin, until the Phase 8 screen exists):
 ```sql
 insert into public.user_roles (user_id, role)
 select id, 'order_manager' from auth.users where email = 'staff@example.com';
 ```
-Valid roles: `super_admin`, `admin`, `order_manager`, `product_manager`, `payment_manager`. The last Super Admin cannot be removed.

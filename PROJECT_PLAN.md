@@ -93,7 +93,15 @@ The brief requires that all business content be editable from admin and stored i
 - [ ] **You:** configure Supabase Auth URLs (see SUPABASE_SETUP.md section 4) and test sign-in locally
 - Not in this phase: wishlist (Phase 4), orders (Phase 7), admin screens (Phases 4-8), guest checkout (Phase 5)
 
-### PHASE 4 — Product catalog, categories, variants, inventory  ⬜
+### PHASE 4 — Product catalogue, categories, variants, inventory  ✅ (pending your approval; not yet applied to the live project)
+- [x] Migrations 7-8: storefront views and catalogue functions (tested on PostgreSQL)
+- [x] Storefront from real data: shop, men, women, category, collection, search; filters (gender, category, price, size, colour, availability, new, discount), 5 sorts, pagination
+- [x] Product page: gallery with zoom, size/colour selection, per-variant price and stock, related, recently viewed, reviews (moderated), quick view
+- [x] Wishlist (signed-in customers), navigation and search suggestions from the database
+- [x] Admin: products (CRUD, duplicate, bulk actions, CSV export), photos, variants, categories/subcategories, inventory
+- [ ] **You:** run `supabase/apply_phase4.sql`, optionally the demo products, then test (see report)
+- Not in this phase: Add to Cart / Buy Now (Phase 5, so they are shown disabled), hero/banners/homepage builder (Phase 8), orders (Phase 7)
+
 ### PHASE 5 — Cart, coupons, checkout (server-side pricing via Edge Functions)  ⬜
 ### PHASE 6 — Delivery management; bKash / Nagad / Upay manual advance payment  ⬜
 ### PHASE 7 — Order management, customer dashboard, tracking  ⬜

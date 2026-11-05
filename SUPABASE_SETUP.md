@@ -11,15 +11,20 @@ VITE_SITE_URL=http://localhost:5173
 ```
 The anon key is public by design; RLS protects the data. **Never** put the service role key in `.env.local`, the frontend, or Netlify.
 
-## 2. Apply the database (first time only, on a fresh project)
-Option A — SQL Editor (simplest):
-1. Supabase dashboard -> SQL Editor -> New query.
-2. Paste the entire contents of `supabase/apply_all.sql` -> Run. It must finish with no error.
-   (Regenerate it after any migration change with `npm run db:bundle`.)
+## 2. Apply the database
+Run SQL in Supabase -> SQL Editor -> New query -> paste -> Run. **Never run a file twice.**
 
-Option B — Supabase CLI: `supabase link --project-ref wmtzqwwtdsmlproxonsy` then `supabase db push`.
+| Your project | Run this file |
+|---|---|
+| Brand new, empty project | `supabase/apply_all.sql` (everything) |
+| Already has Phases 2-3 applied (migrations `20261103*`) | `supabase/apply_phase4.sql` only (adds the storefront views and catalogue functions; changes no data) |
 
-Run the migrations **once**. They are ordered by filename in `supabase/migrations/`; never edit an applied migration — add a new one.
+Both are generated from `supabase/migrations/` with `npm run db:bundle`. Never edit an applied migration; add a new one. Alternative: Supabase CLI (`supabase link --project-ref wmtzqwwtdsmlproxonsy`, then `supabase db push`).
+
+Migration status of the live project: `20261103000001`-`000006` applied. `20261104000001` and `20261104000007` are new in Phase 4 and must be applied (file above).
+
+### Optional demo products
+`supabase/demo/demo_products.sql` adds 8 clearly-marked demo products (SKUs start `DEMO-`) so you can see the storefront and admin working. `supabase/demo/remove_demo_products.sql` removes them. Invented names and prices: never launch with them.
 
 ## 3. Create the first Super Admin (secure, one time)
 Public registration never grants admin rights. Do this by hand:

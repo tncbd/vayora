@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.4.0 — Phase 4 (2026-11-05)
+- Storefront reads real data: filters, sorting, pagination, search suggestions, product pages with variants, wishlist, recently viewed, reviews, quick view.
+- Database: `storefront_products`/`public_reviews` read-only views, `list_products()`, `catalog_facets()` (migrations 20261104000001/07).
+- Admin: products, photos, variants, categories/subcategories, inventory; per-section role guards.
+- Sample products removed from the code: an empty store shows no products instead of invented ones.
+- `apply_phase4.sql` for projects that already have Phases 2-3.
+- 77 new tests (191 total).
+
 ## 0.3.0 — Phase 3 (2026-11-04)
 - Supabase Auth: sign in, register, forgot/reset password, sign out.
 - Customer account: overview, profile, saved addresses (64-district list, BD phone validation).

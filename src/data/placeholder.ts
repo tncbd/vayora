@@ -4,15 +4,7 @@
 // exists. It is replaced by database queries in Phases 2–4 and becomes editable
 // from the admin panel in Phase 8. Do not treat any value here as business data.
 // ============================================================================
-import type {
-  Category,
-  HeroSlide,
-  NavItem,
-  Product,
-  PromoBanner,
-  Review,
-  SiteSettings,
-} from '@/types';
+import type { Category, HeroSlide, NavItem, PromoBanner, Review, SiteSettings } from '@/types';
 
 export const siteSettings: SiteSettings = {
   storeName: 'VAYORA FASHION',
@@ -157,81 +149,6 @@ export const promoBanners: PromoBanner[] = [
     tone: 'from-[#c6a46a] to-[#e2cd9f]',
   },
 ];
-
-// ---- Sample products ------------------------------------------------------
-const palette = {
-  black: { name: 'Black', hex: '#171717' },
-  white: { name: 'White', hex: '#F4F1EA' },
-  navy: { name: 'Navy', hex: '#1F2A44' },
-  olive: { name: 'Olive', hex: '#6B6B3A' },
-  maroon: { name: 'Maroon', hex: '#6D1F2B' },
-  sand: { name: 'Sand', hex: '#C9B796' },
-  rose: { name: 'Rose', hex: '#C98B94' },
-};
-
-type Seed = {
-  n: string;
-  g: Product['gender'];
-  c: string;
-  reg: number;
-  sell: number;
-  flags?: Partial<
-    Pick<Product, 'isFeatured' | 'isBestseller' | 'isNewArrival' | 'isTrending' | 'isWinter'>
-  >;
-  colors: (keyof typeof palette)[];
-  sizes: string[];
-  sales: number;
-  day: number;
-};
-
-const SIZES_ALPHA = ['S', 'M', 'L', 'XL'];
-
-const seeds: Seed[] = [
-  { n: 'Premium Cotton T-Shirt', g: 'men', c: 't-shirt', reg: 799, sell: 599, flags: { isBestseller: true, isNewArrival: true }, colors: ['black', 'white', 'navy'], sizes: ['M', 'L', 'XL', 'XXL'], sales: 320, day: 2 },
-  { n: 'Classic Pique Polo', g: 'men', c: 'polo-shirt', reg: 1199, sell: 999, flags: { isBestseller: true, isFeatured: true }, colors: ['navy', 'white', 'olive'], sizes: SIZES_ALPHA, sales: 280, day: 9 },
-  { n: 'Oxford Casual Shirt', g: 'men', c: 'casual-shirt', reg: 1490, sell: 1290, flags: { isTrending: true, isNewArrival: true }, colors: ['sand', 'navy'], sizes: SIZES_ALPHA, sales: 190, day: 4 },
-  { n: 'Embroidered Cotton Panjabi', g: 'men', c: 'panjabi', reg: 2490, sell: 1990, flags: { isFeatured: true, isTrending: true }, colors: ['white', 'maroon', 'navy'], sizes: ['M', 'L', 'XL', 'XXL'], sales: 410, day: 12 },
-  { n: 'Slim Fit Denim Jeans', g: 'men', c: 'jeans', reg: 1990, sell: 1690, flags: { isBestseller: true }, colors: ['navy', 'black'], sizes: ['30', '32', '34', '36'], sales: 260, day: 20 },
-  { n: 'Fleece Pullover Hoodie', g: 'men', c: 'hoodie', reg: 1890, sell: 1490, flags: { isWinter: true, isNewArrival: true, isTrending: true }, colors: ['black', 'olive', 'sand'], sizes: SIZES_ALPHA, sales: 150, day: 1 },
-  { n: 'Quilted Winter Jacket', g: 'men', c: 'jacket', reg: 3490, sell: 2790, flags: { isWinter: true, isFeatured: true }, colors: ['black', 'navy'], sizes: SIZES_ALPHA, sales: 95, day: 6 },
-  { n: 'Merino Blend Sweater', g: 'men', c: 'sweater', reg: 2290, sell: 1890, flags: { isWinter: true, isBestseller: true }, colors: ['sand', 'navy', 'maroon'], sizes: SIZES_ALPHA, sales: 120, day: 15 },
-  { n: 'Handloom Cotton Saree', g: 'women', c: 'saree', reg: 3290, sell: 2690, flags: { isFeatured: true, isBestseller: true }, colors: ['maroon', 'navy', 'rose'], sizes: ['Free Size'], sales: 340, day: 8 },
-  { n: 'Printed Three Piece Set', g: 'women', c: 'three-piece', reg: 2790, sell: 2290, flags: { isTrending: true, isNewArrival: true }, colors: ['rose', 'sand', 'olive'], sizes: ['M', 'L', 'XL'], sales: 270, day: 3 },
-  { n: 'Everyday Cotton Kurti', g: 'women', c: 'kurti', reg: 1390, sell: 1090, flags: { isBestseller: true, isTrending: true }, colors: ['rose', 'white', 'navy'], sizes: SIZES_ALPHA, sales: 360, day: 11 },
-  { n: 'Relaxed Linen Top', g: 'women', c: 'tops', reg: 990, sell: 790, flags: { isNewArrival: true, isFeatured: true }, colors: ['white', 'sand', 'rose'], sizes: SIZES_ALPHA, sales: 140, day: 5 },
-  { n: 'Silk Blend Salwar Kameez', g: 'women', c: 'salwar-kameez', reg: 3890, sell: 3290, flags: { isFeatured: true }, colors: ['maroon', 'navy'], sizes: ['M', 'L', 'XL'], sales: 110, day: 18 },
-  { n: 'High-Rise Stretch Leggings', g: 'women', c: 'leggings', reg: 699, sell: 549, flags: { isBestseller: true }, colors: ['black', 'navy', 'maroon'], sizes: SIZES_ALPHA, sales: 300, day: 25 },
-  { n: 'Wool Blend Winter Shawl Set', g: 'women', c: 'womens-winter', reg: 2990, sell: 2390, flags: { isWinter: true, isNewArrival: true, isTrending: true }, colors: ['sand', 'maroon', 'olive'], sizes: ['Free Size'], sales: 85, day: 2 },
-  { n: 'Straight Leg Women’s Jeans', g: 'women', c: 'womens-jeans', reg: 1890, sell: 1590, flags: { isTrending: true }, colors: ['navy', 'black'], sizes: ['28', '30', '32', '34'], sales: 175, day: 14 },
-];
-
-const DAY_MS = 86_400_000;
-
-export const products: Product[] = seeds.map((s, i) => ({
-  id: `sample-${i + 1}`,
-  slug: s.n
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, ''),
-  sku: `VAY-SAMPLE-${String(i + 1).padStart(3, '0')}`,
-  name: s.n,
-  shortDescription: 'Sample product — replace with real catalogue data.',
-  gender: s.g,
-  categorySlug: s.c,
-  regularPrice: s.reg,
-  sellingPrice: s.sell,
-  imageUrl: null,
-  hoverImageUrl: null,
-  colors: s.colors.map((k) => palette[k]),
-  sizes: s.sizes,
-  isFeatured: !!s.flags?.isFeatured,
-  isBestseller: !!s.flags?.isBestseller,
-  isNewArrival: !!s.flags?.isNewArrival,
-  isTrending: !!s.flags?.isTrending,
-  isWinter: !!s.flags?.isWinter,
-  createdAt: new Date(Date.now() - s.day * DAY_MS).toISOString(),
-  salesCount: s.sales,
-}));
 
 export const reviews: Review[] = [
   {

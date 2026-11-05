@@ -1,6 +1,9 @@
 import { Route, Routes } from 'react-router-dom';
 import { AuthProvider } from '@/context/AuthContext';
-import { RequireAuth, RequireStaff } from '@/components/auth/Guards';
+import { WishlistProvider } from '@/context/WishlistContext';
+import ProductPage from '@/pages/ProductPage';
+import Wishlist from '@/pages/account/Wishlist';
+import { RequireAuth, RequireSection, RequireStaff } from '@/components/auth/Guards';
 import Login from '@/pages/auth/Login';
 import Register from '@/pages/auth/Register';
 import ForgotPassword from '@/pages/auth/ForgotPassword';
@@ -11,6 +14,10 @@ import Profile from '@/pages/account/Profile';
 import Addresses from '@/pages/account/Addresses';
 import AdminLayout from '@/pages/admin/AdminLayout';
 import AdminHome from '@/pages/admin/AdminHome';
+import Categories from '@/pages/admin/Categories';
+import ProductList from '@/pages/admin/ProductList';
+import ProductEdit from '@/pages/admin/ProductEdit';
+import Inventory from '@/pages/admin/Inventory';
 import { Layout } from '@/components/layout/Layout';
 import Home from '@/pages/Home';
 import NotFound from '@/pages/NotFound';
@@ -29,21 +36,19 @@ import {
 export default function App() {
   return (
     <AuthProvider>
+    <WishlistProvider>
     <Routes>
       <Route element={<Layout />}>
         <Route index element={<Home />} />
 
-        {/* Catalogue (sample data until Phase 4) */}
+        {/* Catalogue (live Supabase data) */}
         <Route path="shop" element={<ShopAll />} />
         <Route path="women" element={<GenderPage gender="women" />} />
         <Route path="men" element={<GenderPage gender="men" />} />
         <Route path="category/:slug" element={<CategoryPage />} />
         <Route path="collections/:slug" element={<CollectionPage />} />
         <Route path="search" element={<SearchPage />} />
-        <Route
-          path="product/:slug"
-          element={<Scaffold title="Product Details" phase={4} phaseLabel="Catalogue" description="Product pages with image gallery, size and colour selection, and add to cart are built in Phase 4." />}
-        />
+        <Route path="product/:slug" element={<ProductPage />} />
 
         {/* Commerce (later phases) */}
         <Route path="cart" element={<Scaffold title="Shopping Cart" phase={5} phaseLabel="Cart & Checkout" description="The shopping cart is built in Phase 5, with prices and totals always recalculated on the server." />} />
@@ -64,7 +69,7 @@ export default function App() {
             <Route path="profile" element={<Profile />} />
             <Route path="addresses" element={<Addresses />} />
             <Route path="orders" element={<Scaffold embedded title="My Orders" phase={7} phaseLabel="Orders" description="Order history is built in Phase 7." />} />
-            <Route path="wishlist" element={<Scaffold embedded title="My Wishlist" phase={4} phaseLabel="Catalogue" description="The wishlist is built in Phase 4, alongside the product catalogue." />} />
+            <Route path="wishlist" element={<Wishlist />} />
           </Route>
         </Route>
 
@@ -83,10 +88,22 @@ export default function App() {
       <Route path="admin" element={<RequireStaff />}>
         <Route element={<AdminLayout />}>
           <Route index element={<AdminHome />} />
+          <Route element={<RequireSection section="products" />}>
+            <Route path="products" element={<ProductList />} />
+            <Route path="products/new" element={<ProductEdit />} />
+            <Route path="products/:id" element={<ProductEdit />} />
+          </Route>
+          <Route element={<RequireSection section="categories" />}>
+            <Route path="categories" element={<Categories />} />
+          </Route>
+          <Route element={<RequireSection section="inventory" />}>
+            <Route path="inventory" element={<Inventory />} />
+          </Route>
           <Route path="*" element={<AdminHome />} />
         </Route>
       </Route>
     </Routes>
+    </WishlistProvider>
     </AuthProvider>
   );
 }

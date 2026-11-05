@@ -1,7 +1,9 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Search, X } from 'lucide-react';
-import { searchProducts } from '@/lib/catalog';
+import { searchSuggestions } from '@/lib/catalogApi';
+import { isSupabaseConfigured } from '@/lib/supabase';
+import type { Product } from '@/types';
 import { formatBDT } from '@/lib/format';
 
 export function SearchOverlay({ open, onClose }: { open: boolean; onClose: () => void }) {
@@ -22,7 +24,30 @@ export function SearchOverlay({ open, onClose }: { open: boolean; onClose: () =>
     };
   }, [open, onClose]);
 
-  const suggestions = useMemo(() => searchProducts(query).slice(0, 5), [query]);
+  const [suggestions, setSuggestions] = useState<Product[]>([]);
+  const [searching, setSearching] = useState(false);
+
+  // debounced suggestions; stale responses are ignored
+  useEffect(() => {
+    const text = query.trim();
+    if (!open || !isSupabaseConfigured || text.length < 2) {
+      setSuggestions([]);
+      setSearching(false);
+      return;
+    }
+    let active = true;
+    setSearching(true);
+    const t = setTimeout(() => {
+      searchSuggestions(text)
+        .then((r) => active && setSuggestions(r))
+        .catch(() => active && setSuggestions([]))
+        .finally(() => active && setSearching(false));
+    }, 250);
+    return () => {
+      active = false;
+      clearTimeout(t);
+    };
+  }, [query, open]);
 
   if (!open) return null;
 
@@ -73,7 +98,7 @@ export function SearchOverlay({ open, onClose }: { open: boolean; onClose: () =>
                 ))}
               </ul>
             ) : (
-              <p className="text-sm text-muted">No suggestions. Press Enter to search.</p>
+              <p className="text-sm text-muted" role="status">{searching ? 'Searching…' : 'No suggestions. Press Enter to search all products.'}</p>
             )}
           </div>
         )}
