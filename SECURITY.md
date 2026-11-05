@@ -27,5 +27,14 @@
 - Admin catalogue writes run as the signed-in staff member, so row-level security (not the UI) decides what is allowed.
 - Photo uploads are type- and size-checked in the browser and by the storage bucket.
 
+## Cart, coupons and orders (Phase 5)
+- The browser cart holds only variant ids and quantities. Price, discount, delivery charge, total and stock are decided in the database every time; a tampered cart or request body cannot change money.
+- Orders are created only by `place_order()`, executable by the service role alone, called by the `place-order` Edge Function. Customers have no insert access to orders.
+- Stock is reserved atomically with the order; a failure rolls everything back (tested). The customer's displayed total is sent as `expected_total`; a mismatch is refused.
+- Coupons are not readable by customers; a rejected code gives one generic message. Usage limits are enforced under a row lock.
+- Idempotency key per checkout attempt prevents double orders on double-click or retry.
+- Edge Function: CORS allow-list, 20 KB body limit, per-IP brake. The brake is per function instance, so it is a soft limit; stronger rate limiting and bot protection are scheduled for Phase 10.
+- Remaining by design: coupon codes can be guessed by trial through `quote_order` (Phase 10 adds throttling).
+
 ## Planned rules
 RLS on every sensitive table; server-side recalculation of prices, discounts, delivery and totals; backend-enforced roles; private `payment-proofs` bucket; audit logs; service role key only in Edge Functions.

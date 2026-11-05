@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.5.0 — Phase 5 (2026-11-05)
+- Cart, checkout (guest or signed-in), order confirmation, Add to Cart / Buy Now, header cart count.
+- Server-side pricing: `quote_order()` and `place_order()`; `place-order` Edge Function; stock is reserved at order time; duplicate submissions are ignored.
+- Coupons: percentage/fixed, minimum order, max discount, total and per-customer limits, schedule; admin Coupons screen.
+- `apply_phase5.sql` for projects that already have Phases 2-4.
+- 48 new tests (239 total).
+
 ## 0.4.0 — Phase 4 (2026-11-05)
 - Storefront reads real data: filters, sorting, pagination, search suggestions, product pages with variants, wishlist, recently viewed, reviews, quick view.
 - Database: `storefront_products`/`public_reviews` read-only views, `list_products()`, `catalog_facets()` (migrations 20261104000001/07).

@@ -72,3 +72,19 @@ describe('auth schemas', () => {
     expect(addressSchema.safeParse({ ...ok, addressLine: 'x' }).success).toBe(false);
   });
 });
+
+import { checkoutSchema } from './validation';
+describe('checkoutSchema', () => {
+  const ok = { fullName: 'Rahim Uddin', phone: '+8801712345678', altPhone: '', email: '', district: 'Dhaka', area: 'Mirpur', addressLine: 'House 1, Road 2', deliveryInstructions: '', notes: '' };
+  it('normalises the phone and accepts optional fields empty', () => {
+    const r = checkoutSchema.safeParse(ok);
+    expect(r.success).toBe(true);
+    if (r.success) { expect(r.data.phone).toBe('01712345678'); expect(r.data.altPhone).toBeNull(); }
+  });
+  it.each([
+    ['phone', { phone: '123' }], ['name', { fullName: 'A' }], ['district', { district: 'Atlantis' }],
+    ['address', { addressLine: 'x' }], ['email', { email: 'nope' }], ['notes', { notes: 'x'.repeat(501) }],
+  ])('rejects bad %s', (_n, patch) => {
+    expect(checkoutSchema.safeParse({ ...ok, ...patch }).success).toBe(false);
+  });
+});

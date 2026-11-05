@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { Heart, Menu, Search, ShoppingBag, User } from 'lucide-react';
 import { useNavItems } from '@/hooks/useCategories';
+import { useCart } from '@/context/CartContext';
 import { MobileNav } from './MobileNav';
 import { SearchOverlay } from './SearchOverlay';
 
@@ -9,6 +10,7 @@ const iconBtn = 'relative p-2 text-primary transition-colors hover:text-accent-d
 
 export function Header() {
   const navItems = useNavItems();
+  const { count } = useCart();
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
 
@@ -71,8 +73,11 @@ export function Header() {
           <Link to="/account" className={`${iconBtn} hidden sm:inline-flex`} aria-label="My account">
             <User size={20} />
           </Link>
-          <Link to="/cart" className={iconBtn} aria-label="Shopping cart">
+          <Link to="/cart" className={iconBtn} aria-label={count > 0 ? `Shopping cart, ${count} items` : 'Shopping cart'}>
             <ShoppingBag size={20} />
+            {count > 0 && (
+              <span className="absolute -right-0.5 -top-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-primary px-1 text-[10px] font-medium text-white">{count > 99 ? '99+' : count}</span>
+            )}
           </Link>
         </div>
       </div>

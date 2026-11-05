@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useCart } from '@/context/CartContext';
 import { ChevronRight, Minus, Plus } from 'lucide-react';
 import { getProductBySlug, getProductsBySlugs, getRelatedProducts } from '@/lib/catalogApi';
 import { isSupabaseConfigured } from '@/lib/supabase';
@@ -23,6 +24,9 @@ export default function ProductPage() {
   const { data: product, loading, error, reload } = useAsync(() => (isSupabaseConfigured ? getProductBySlug(slug) : Promise.resolve(null)), [slug]);
   const [sel, setSel] = useState<Selection>({ size: null, color: null });
   const [qty, setQty] = useState(1);
+  const [added, setAdded] = useState(false);
+  const cart = useCart();
+  const navigate = useNavigate();
 
   usePageTitle(product ? product.seoTitle || product.name : undefined);
 
@@ -30,6 +34,7 @@ export default function ProductPage() {
     if (!product) return;
     setSel(defaultSelection(product.variants));
     setQty(1);
+    setAdded(false);
     rememberProduct(product.slug);
   }, [product]);
 
@@ -55,6 +60,7 @@ export default function ProductPage() {
 
   const unit = effectivePrice(product.sellingPrice, variant);
   const showStrike = unit < product.regularPrice;
+  const canBuy = !!variant && variant.inStock && variant.availableQty > 0;
   const maxQty = variant ? Math.max(1, Math.min(variant.availableQty, 10)) : 10;
   const status = !complete ? null : !variant || !variant.inStock ? 'out' : variant.availableQty <= 5 ? 'low' : 'in';
 
@@ -136,10 +142,15 @@ export default function ProductPage() {
           </div>
 
           <div className="mt-6 grid gap-3 sm:grid-cols-2">
-            <Button disabled title="Online ordering is coming soon">Add to Cart</Button>
-            <Button variant="outline" disabled title="Online ordering is coming soon">Buy Now</Button>
+            <Button disabled={!canBuy} title={canBuy ? undefined : 'Select an available size and colour'} onClick={() => { cart.add(variant!.id, qty); setAdded(true); }}>Add to Cart</Button>
+            <Button variant="outline" disabled={!canBuy} title={canBuy ? undefined : 'Select an available size and colour'} onClick={() => { cart.add(variant!.id, qty); navigate('/checkout'); }}>Buy Now</Button>
           </div>
-          <p className="mt-3 text-xs text-muted">Online ordering opens soon. Cash on Delivery will be available across Bangladesh.</p>
+          {added && (
+            <p role="status" className="mt-3 text-sm text-green-800">
+              Added to your cart. <Link to="/cart" className="underline">View cart</Link>
+            </p>
+          )}
+          <p className="mt-3 text-xs text-muted">Cash on Delivery available across Bangladesh.</p>
 
           <dl className="mt-8 grid grid-cols-[auto_1fr] gap-x-6 gap-y-2 border-t border-line pt-6 text-sm">
             <dt className="text-muted">SKU</dt><dd>{variant?.sku ?? product.sku}</dd>

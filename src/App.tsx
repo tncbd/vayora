@@ -1,6 +1,10 @@
 import { Route, Routes } from 'react-router-dom';
 import { AuthProvider } from '@/context/AuthContext';
 import { WishlistProvider } from '@/context/WishlistContext';
+import { CartProvider } from '@/context/CartContext';
+import Cart from '@/pages/Cart';
+import Checkout from '@/pages/Checkout';
+import OrderConfirmation from '@/pages/OrderConfirmation';
 import ProductPage from '@/pages/ProductPage';
 import Wishlist from '@/pages/account/Wishlist';
 import { RequireAuth, RequireSection, RequireStaff } from '@/components/auth/Guards';
@@ -18,6 +22,7 @@ import Categories from '@/pages/admin/Categories';
 import ProductList from '@/pages/admin/ProductList';
 import ProductEdit from '@/pages/admin/ProductEdit';
 import Inventory from '@/pages/admin/Inventory';
+import Coupons from '@/pages/admin/Coupons';
 import { Layout } from '@/components/layout/Layout';
 import Home from '@/pages/Home';
 import NotFound from '@/pages/NotFound';
@@ -37,6 +42,7 @@ export default function App() {
   return (
     <AuthProvider>
     <WishlistProvider>
+    <CartProvider>
     <Routes>
       <Route element={<Layout />}>
         <Route index element={<Home />} />
@@ -51,9 +57,9 @@ export default function App() {
         <Route path="product/:slug" element={<ProductPage />} />
 
         {/* Commerce (later phases) */}
-        <Route path="cart" element={<Scaffold title="Shopping Cart" phase={5} phaseLabel="Cart & Checkout" description="The shopping cart is built in Phase 5, with prices and totals always recalculated on the server." />} />
-        <Route path="checkout" element={<Scaffold title="Checkout" phase={5} phaseLabel="Cart & Checkout" description="Checkout is built in Phase 5, with delivery and advance-payment handling in Phase 6." />} />
-        <Route path="order-confirmation" element={<Scaffold title="Order Confirmation" phase={5} phaseLabel="Cart & Checkout" description="Order confirmation is available once checkout is live." />} />
+        <Route path="cart" element={<Cart />} />
+        <Route path="checkout" element={<Checkout />} />
+        <Route path="order-confirmation" element={<OrderConfirmation />} />
         <Route path="track-order" element={<Scaffold title="Order Tracking" phase={7} phaseLabel="Orders" description="Order tracking is built in Phase 7." />} />
 
         {/* Authentication */}
@@ -99,10 +105,14 @@ export default function App() {
           <Route element={<RequireSection section="inventory" />}>
             <Route path="inventory" element={<Inventory />} />
           </Route>
+          <Route element={<RequireSection section="coupons" />}>
+            <Route path="coupons" element={<Coupons />} />
+          </Route>
           <Route path="*" element={<AdminHome />} />
         </Route>
       </Route>
     </Routes>
+    </CartProvider>
     </WishlistProvider>
     </AuthProvider>
   );

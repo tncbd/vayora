@@ -44,7 +44,7 @@ export const ADMIN_SECTIONS: readonly AdminSection[] = [
   { key: 'payment-verification', label: 'Payment Verification', roles: PAY, phase: 6 },
   { key: 'customers', label: 'Customers', roles: ORD, phase: 8 },
   { key: 'delivery-zones', label: 'Delivery Zones', roles: ADM, phase: 6 },
-  { key: 'coupons', label: 'Coupons', roles: ADM, phase: 5 },
+  { key: 'coupons', label: 'Coupons', roles: ADM, phase: 5, path: '/admin/coupons' },
   { key: 'banners', label: 'Banners', roles: ADM, phase: 8 },
   { key: 'homepage-builder', label: 'Homepage Builder', roles: ADM, phase: 8 },
   { key: 'hero-slider', label: 'Hero Slider', roles: ADM, phase: 8 },

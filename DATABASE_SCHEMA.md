@@ -9,6 +9,7 @@ Migrations (apply in order, once): `supabase/migrations/`
 6. `..0006_seed.sql` — categories, collections, settings, homepage layout, draft pages (no products, prices, numbers)
 7. `20261104000001_storefront_views.sql` — read-only views `storefront_products` (active products with main image, sizes, colours, in-stock flag, rating, collection slugs) and `public_reviews` (approved reviews with first name only); `variant_availability` made read-only
 8. `20261104000007_catalog_functions.sql` — `list_products()` (search, filters, sorting and pagination in the database, so the catalogue scales), `catalog_facets()` (available sizes, colours, price range), `duplicate_product()`, `set_main_image()`
+9. `20261105000001_checkout.sql` — `quote_order()` (public, read-only: prices a cart from database prices, applies coupon and delivery zone), `place_order()` (service role only: re-prices, validates, reserves stock and writes order, items and coupon usage in one transaction), internal `_quote()`, and `orders.idempotency_key` (stops double orders)
 
 ## Tables
 **Identity:** profiles, user_roles, addresses

@@ -102,7 +102,14 @@ The brief requires that all business content be editable from admin and stored i
 - [ ] **You:** run `supabase/apply_phase4.sql`, optionally the demo products, then test (see report)
 - Not in this phase: Add to Cart / Buy Now (Phase 5, so they are shown disabled), hero/banners/homepage builder (Phase 8), orders (Phase 7)
 
-### PHASE 5 — Cart, coupons, checkout (server-side pricing via Edge Functions)  ⬜
+### PHASE 5 — Cart, coupons, checkout (server-side pricing via Edge Function)  ✅ (pending your approval; not yet applied/deployed live)
+- [x] Migration 9: `quote_order`, `place_order`, idempotency key; 23 PostgreSQL tests (pricing, coupons, zones, stock, atomicity, privileges)
+- [x] `place-order` Edge Function (service role, CORS allow-list, size limit, rate brake)
+- [x] Cart (browser-stored ids and quantities only), cart page, checkout (guest or signed-in, saved address pre-fill), order confirmation
+- [x] Add to Cart and Buy Now on the product page; cart count in the header
+- [x] Admin Coupons screen
+- [ ] **You:** run `supabase/apply_phase5.sql`, deploy the function, set delivery rates, then test (see SUPABASE_SETUP.md)
+- Not in this phase: advance delivery-charge payment (checkout refuses it until Phase 6), order tracking and history (Phase 7), delivery zones screen (Phase 6), cart sync across devices (cart lives in the browser)
 ### PHASE 6 — Delivery management; bKash / Nagad / Upay manual advance payment  ⬜
 ### PHASE 7 — Order management, customer dashboard, tracking  ⬜
 ### PHASE 8 — Complete admin dashboard & all editable website settings  ⬜

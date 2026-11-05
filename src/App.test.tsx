@@ -49,6 +49,14 @@ describe('route smoke tests', () => {
     expect(html).not.toContain('Embroidered Cotton Panjabi');
   });
 
+  it('cart, checkout and confirmation render honestly without a backend or an order', () => {
+    expect(render('/cart')).toContain('Your cart is empty');
+    expect(render('/checkout')).toContain('Your cart is empty');
+    const c = render('/order-confirmation');
+    expect(c).toContain('no recent order');
+    expect(c).not.toContain('Thank you for your order');
+  });
+
   it('auth pages render their forms', () => {
     expect(render('/login')).toContain('Sign In');
     expect(render('/login')).toContain('Forgot password?');

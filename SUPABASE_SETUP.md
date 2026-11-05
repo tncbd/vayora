@@ -17,11 +17,28 @@ Run SQL in Supabase -> SQL Editor -> New query -> paste -> Run. **Never run a fi
 | Your project | Run this file |
 |---|---|
 | Brand new, empty project | `supabase/apply_all.sql` (everything) |
-| Already has Phases 2-3 applied (migrations `20261103*`) | `supabase/apply_phase4.sql` only (adds the storefront views and catalogue functions; changes no data) |
+| Already has Phases 2-3 applied (migrations `20261103*`) | `supabase/apply_phase4.sql`, then `supabase/apply_phase5.sql` (each once, in this order) |
+| Already has Phase 4 applied | `supabase/apply_phase5.sql` only (adds server-side pricing, coupons and order placement; changes no data) |
 
 Both are generated from `supabase/migrations/` with `npm run db:bundle`. Never edit an applied migration; add a new one. Alternative: Supabase CLI (`supabase link --project-ref wmtzqwwtdsmlproxonsy`, then `supabase db push`).
 
 Migration status of the live project: `20261103000001`-`000006` applied. `20261104000001` and `20261104000007` are new in Phase 4 and must be applied (file above).
+
+### Phase 5: deploy the `place-order` Edge Function
+Orders are created only by this function (it uses the service role key, which Supabase injects automatically; you never paste it anywhere).
+1. Install the Supabase CLI and log in: `supabase login`
+2. From the project folder: `supabase link --project-ref wmtzqwwtdsmlproxonsy`
+3. Allow your site address: `supabase secrets set ALLOWED_ORIGINS=http://localhost:5173,https://YOUR-NETLIFY-SITE.netlify.app`
+4. Deploy: `supabase functions deploy place-order`
+Without step 4 checkout will show "We could not place your order".
+
+### Phase 5: turn delivery on (until the Phase 6 screen exists)
+Delivery zones are seeded inactive with a 0 charge, so checkout says "We do not deliver to this district yet" until you set real rates. Edit the numbers, then run once in the SQL Editor:
+```sql
+update public.delivery_zones set charge = 80,  is_active = true, estimated_days_min = 1, estimated_days_max = 3 where name = 'Inside Dhaka';
+update public.delivery_zones set charge = 130, is_active = true, estimated_days_min = 3, estimated_days_max = 5 where name = 'Outside Dhaka';
+```
+(80 and 130 are examples, not recommendations.) Optional free delivery: `free_delivery_threshold = 3000`.
 
 ### Optional demo products
 `supabase/demo/demo_products.sql` adds 8 clearly-marked demo products (SKUs start `DEMO-`) so you can see the storefront and admin working. `supabase/demo/remove_demo_products.sql` removes them. Invented names and prices: never launch with them.

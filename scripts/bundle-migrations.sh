@@ -2,6 +2,7 @@
 # Builds two SQL Editor files from supabase/migrations/*.sql:
 #   supabase/apply_all.sql      - every migration, for a FRESH project only
 #   supabase/apply_phase4.sql   - only the migrations added in Phase 4 (20261104*), for a project that already has Phases 2-3
+#   supabase/apply_phase5.sql   - only the Phase 5 migration (20261105*), for a project that already has Phases 2-4
 set -euo pipefail
 cd "$(dirname "$0")/.."
 bundle() { # output, glob
@@ -10,3 +11,4 @@ bundle() { # output, glob
 }
 bundle supabase/apply_all.sql "supabase/migrations/*.sql"
 bundle supabase/apply_phase4.sql "supabase/migrations/20261104*.sql"
+bundle supabase/apply_phase5.sql "supabase/migrations/20261105*.sql"

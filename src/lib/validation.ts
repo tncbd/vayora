@@ -101,3 +101,25 @@ export type ProfileInput = z.input<typeof profileSchema>;
 export type ProfileOutput = z.output<typeof profileSchema>;
 export type AddressInput = z.input<typeof addressSchema>;
 export type AddressOutput = z.output<typeof addressSchema>;
+
+// ---------- checkout ----------
+const optionalEmail = z
+  .string()
+  .trim()
+  .toLowerCase()
+  .max(254)
+  .refine((v) => v === '' || z.string().email().safeParse(v).success, 'Enter a valid email address');
+
+export const checkoutSchema = z.object({
+  fullName: z.string().trim().min(2, 'Enter your full name').max(120),
+  phone,
+  altPhone: optionalPhone,
+  email: optionalEmail,
+  district: z.string().refine((v) => DISTRICTS.includes(v), 'Select your district'),
+  area: z.string().trim().min(2, 'Enter your area').max(120),
+  addressLine: z.string().trim().min(5, 'Enter the full delivery address').max(300),
+  deliveryInstructions: z.string().trim().max(500, 'Maximum 500 characters'),
+  notes: z.string().trim().max(500, 'Maximum 500 characters'),
+});
+export type CheckoutInput = z.input<typeof checkoutSchema>;
+export type CheckoutOutput = z.output<typeof checkoutSchema>;
