@@ -47,3 +47,6 @@ Orders, payments, newsletter signups and contact messages are created only by Ed
 
 ## Storage
 public: product-images, banners, site-assets, review-images · private: payment-proofs (owner + payment staff read only; customers cannot edit or delete submitted proofs).
+
+## Migration 12 (Phase 8): content and admin functions
+`submit_contact_message`, `subscribe_newsletter` (anon + authenticated), `admin_dashboard_stats`, `admin_list_customers`, `admin_list_staff`, `admin_find_user` (staff, role-checked inside), and `audit_content_change` trigger on banners, hero_slides, homepage_sections, pages, menus, site_settings, coupons, delivery_zones, payment_methods, categories and user_roles. No tables or columns changed.

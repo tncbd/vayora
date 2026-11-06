@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronDown, X } from 'lucide-react';
-import { siteSettings } from '@/data/placeholder';
+import { useSiteSettings } from '@/context/SiteContentContext';
 import { useNavItems } from '@/hooks/useCategories';
 import { cn } from '@/lib/cn';
 
 export function MobileNav({ open, onClose }: { open: boolean; onClose: () => void }) {
   const navItems = useNavItems();
+  const siteSettings = useSiteSettings();
   const [expanded, setExpanded] = useState<string | null>(null);
 
   useEffect(() => {
@@ -77,7 +78,7 @@ export function MobileNav({ open, onClose }: { open: boolean; onClose: () => voi
           <Link to="/account" onClick={onClose} className="block py-1">My Account</Link>
           <Link to="/track-order" onClick={onClose} className="block py-1">Track Order</Link>
           <Link to="/contact" onClick={onClose} className="block py-1">Contact Us</Link>
-          <p className="pt-2 text-xs text-muted">{siteSettings.phone}</p>
+          {siteSettings.phone && <p className="pt-2 text-xs text-muted">{siteSettings.phone}</p>}
         </div>
       </nav>
     </div>

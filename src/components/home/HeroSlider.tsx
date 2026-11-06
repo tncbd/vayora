@@ -1,13 +1,36 @@
 import { useCallback, useEffect, useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { heroSlides } from '@/data/placeholder';
+import type { HeroSlide } from '@/types';
+import { fetchHeroSlides } from '@/lib/contentApi';
+import { safeLink, safeUrl } from '@/lib/siteContent';
+import { isSupabaseConfigured } from '@/lib/supabase';
 import { ButtonLink } from '@/components/ui/Button';
 import { cn } from '@/lib/cn';
 
 const INTERVAL_MS = 6000;
+const TONES = ['from-[#2a2723] via-[#171717] to-[#3a332a]', 'from-[#3b2f26] via-[#241d18] to-[#171717]', 'from-[#1f2429] via-[#171717] to-[#2d2a24]'];
+
+/** Brand welcome slide, shown until the owner adds slides in Admin > Hero Slider. */
+const DEFAULT_SLIDES: HeroSlide[] = [{
+  id: 'default', eyebrow: 'New Season', title: 'Style for Everyone',
+  description: 'Discover refined essentials and statement pieces, designed for every moment of your day.',
+  buttonLabel: 'Shop New Arrivals', buttonLink: '/collections/new-arrivals', imageUrl: null, tone: TONES[0],
+}];
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const toSlide = (r: Record<string, any>, i: number): HeroSlide => ({
+  id: r.id, eyebrow: r.eyebrow ?? '', title: r.title, description: r.description ?? '',
+  buttonLabel: r.button_label ?? '', buttonLink: safeLink(r.button_link, '/shop'), imageUrl: safeUrl(r.image_url) || null, tone: TONES[i % TONES.length],
+});
 
 export function HeroSlider() {
-  const slides = heroSlides;
+  const [slides, setSlides] = useState<HeroSlide[]>(DEFAULT_SLIDES);
+  useEffect(() => {
+    if (!isSupabaseConfigured) return;
+    let active = true;
+    fetchHeroSlides().then((rows) => { if (active && rows.length) setSlides(rows.map(toSlide)); }).catch(() => undefined);
+    return () => { active = false; };
+  }, []);
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
 
@@ -54,16 +77,18 @@ export function HeroSlider() {
 
             <div className="container-page absolute inset-0 flex items-center">
               <div className="max-w-xl animate-fade-up">
-                <p className="eyebrow !text-accent">{s.eyebrow}</p>
+                {s.eyebrow && <p className="eyebrow !text-accent">{s.eyebrow}</p>}
                 <h1 className="mt-4 font-display text-5xl font-medium leading-[1.05] !text-white sm:text-6xl lg:text-7xl">
                   {s.title}
                 </h1>
-                <p className="mt-5 max-w-md text-sm leading-relaxed text-white/80 sm:text-base">{s.description}</p>
-                <div className="mt-8">
-                  <ButtonLink to={s.buttonLink} variant="light">
-                    {s.buttonLabel}
-                  </ButtonLink>
-                </div>
+                {s.description && <p className="mt-5 max-w-md text-sm leading-relaxed text-white/80 sm:text-base">{s.description}</p>}
+                {s.buttonLabel && (
+                  <div className="mt-8">
+                    <ButtonLink to={s.buttonLink} variant="light">
+                      {s.buttonLabel}
+                    </ButtonLink>
+                  </div>
+                )}
               </div>
             </div>
           </div>

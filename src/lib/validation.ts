@@ -123,3 +123,17 @@ export const checkoutSchema = z.object({
 });
 export type CheckoutInput = z.input<typeof checkoutSchema>;
 export type CheckoutOutput = z.output<typeof checkoutSchema>;
+
+// ---------- contact form ----------
+export const contactSchema = z
+  .object({
+    name: z.string().trim().min(2, 'Enter your name').max(120),
+    phone: optionalPhone,
+    email: optionalEmail,
+    message: z.string().trim().min(5, 'Write your message').max(5000, 'Maximum 5000 characters'),
+  })
+  .superRefine((v, ctx) => {
+    if (!v.phone && !v.email) ctx.addIssue({ code: 'custom', path: ['phone'], message: 'Enter a phone number or an email so we can reply' });
+  });
+export type ContactInput = z.input<typeof contactSchema>;
+export type ContactOutput = z.output<typeof contactSchema>;

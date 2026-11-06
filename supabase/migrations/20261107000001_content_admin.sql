@@ -1,0 +1,196 @@
+-- Phase 8: public forms, admin dashboard numbers, customers, staff lookup, and an audit trail for content edits.
+-- Additive; safe on a project that already has Phases 2-7 applied.
+
+-- ---------- public forms (no direct table access for visitors) ----------
+create or replace function public.submit_contact_message(p_name text, p_phone text, p_email text, p_message text)
+returns void
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  v_name text := trim(coalesce(p_name, ''));
+  v_phone text := nullif(trim(coalesce(p_phone, '')), '');
+  v_email text := nullif(lower(trim(coalesce(p_email, ''))), '');
+  v_msg text := trim(coalesce(p_message, ''));
+begin
+  if length(v_name) < 2 or length(v_name) > 120 then raise exception 'Enter your name.'; end if;
+  if v_phone is null and v_email is null then raise exception 'Enter a phone number or an email so we can reply.'; end if;
+  if v_phone is not null and v_phone !~ '^01[3-9][0-9]{8}$' then raise exception 'Enter a valid Bangladeshi mobile number.'; end if;
+  if v_email is not null and (length(v_email) > 254 or v_email !~ '^[^@\s]+@[^@\s]+\.[^@\s]+$') then raise exception 'Enter a valid email address.'; end if;
+  if length(v_msg) < 5 or length(v_msg) > 5000 then raise exception 'Write your message (5 to 5000 characters).'; end if;
+  if (select count(*) from public.contact_messages
+       where created_at > now() - interval '1 hour'
+         and ((v_email is not null and email = v_email) or (v_phone is not null and phone = v_phone))) >= 5 then
+    raise exception 'You have sent several messages recently. Please wait a while before sending another.';
+  end if;
+  insert into public.contact_messages (name, phone, email, message) values (v_name, v_phone, v_email, v_msg);
+end
+$$;
+
+-- Never reveals whether an address was already subscribed.
+create or replace function public.subscribe_newsletter(p_email text)
+returns void
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare v_email text := lower(trim(coalesce(p_email, '')));
+begin
+  if length(v_email) > 254 or v_email !~ '^[^@\s]+@[^@\s]+\.[^@\s]+$' then raise exception 'Enter a valid email address.'; end if;
+  insert into public.newsletter_subscribers (email) values (v_email)
+  on conflict (email) do update set is_active = true;
+end
+$$;
+
+-- ---------- admin dashboard ----------
+create or replace function public.admin_dashboard_stats()
+returns jsonb
+language plpgsql
+stable
+security definer
+set search_path = ''
+as $$
+declare
+  v_money boolean;
+  v_today date := (now() at time zone 'Asia/Dhaka')::date;
+  r jsonb;
+begin
+  if not public.is_staff() then raise exception 'Not authorised'; end if;
+  v_money := public.has_any_role('super_admin', 'admin', 'order_manager', 'payment_manager');
+  select jsonb_build_object(
+    'orders_today', (select count(*) from public.orders where (placed_at at time zone 'Asia/Dhaka')::date = v_today),
+    'orders_30d', (select count(*) from public.orders where placed_at >= now() - interval '30 days'),
+    'revenue_today', case when v_money then (select coalesce(sum(total), 0) from public.orders
+        where (placed_at at time zone 'Asia/Dhaka')::date = v_today and status not in ('cancelled', 'returned', 'refunded')) end,
+    'revenue_30d', case when v_money then (select coalesce(sum(total), 0) from public.orders
+        where placed_at >= now() - interval '30 days' and status not in ('cancelled', 'returned', 'refunded')) end,
+    'awaiting_review', (select count(*) from public.orders where status = 'pending_order_review'),
+    'awaiting_payment', (select count(*) from public.orders where status = 'pending_payment_verification'),
+    'payments_to_verify', (select count(*) from public.payments where status = 'submitted'),
+    'to_ship', (select count(*) from public.orders where status in ('confirmed', 'processing')),
+    'low_stock', (select count(*) from public.inventory i join public.product_variants v on v.id = i.variant_id
+        where v.is_active and i.quantity - i.reserved > 0 and i.quantity - i.reserved <= i.low_stock_threshold),
+    'out_of_stock', (select count(*) from public.inventory i join public.product_variants v on v.id = i.variant_id
+        where v.is_active and i.quantity - i.reserved <= 0),
+    'new_messages', (select count(*) from public.contact_messages where status = 'new'),
+    'pending_reviews', (select count(*) from public.reviews where status = 'pending'),
+    'daily', (select coalesce(jsonb_agg(jsonb_build_object('date', d::date,
+        'orders', (select count(*) from public.orders o where (o.placed_at at time zone 'Asia/Dhaka')::date = d::date),
+        'revenue', case when v_money then (select coalesce(sum(o.total), 0) from public.orders o
+            where (o.placed_at at time zone 'Asia/Dhaka')::date = d::date and o.status not in ('cancelled', 'returned', 'refunded')) end
+      ) order by d), '[]'::jsonb) from generate_series(v_today - 13, v_today, interval '1 day') d),
+    'top_products', (select coalesce(jsonb_agg(t), '[]'::jsonb) from (
+        select oi.product_name as name, sum(oi.quantity)::int as units
+        from public.order_items oi join public.orders o on o.id = oi.order_id
+        where o.placed_at >= now() - interval '30 days' and o.status not in ('cancelled', 'returned', 'refunded')
+        group by oi.product_name order by units desc, name limit 5) t)
+  ) into r;
+  return r;
+end
+$$;
+
+-- ---------- customers (orders staff) ----------
+create or replace function public.admin_list_customers(p_search text default null, p_limit integer default 50, p_offset integer default 0)
+returns table (id uuid, full_name text, email text, phone text, joined_at timestamptz, orders_count bigint, total_spent numeric, last_order_at timestamptz, total_count bigint)
+language plpgsql
+stable
+security definer
+set search_path = ''
+as $$
+declare v_q text := nullif(lower(trim(coalesce(p_search, ''))), '');
+begin
+  if not public.has_any_role('super_admin', 'admin', 'order_manager') then raise exception 'Not authorised'; end if;
+  return query
+  with c as (
+    select u.id, p.full_name, u.email::text as email, p.phone, u.created_at as joined_at,
+           (select count(*) from public.orders o where o.user_id = u.id) as orders_count,
+           (select coalesce(sum(o.total), 0) from public.orders o where o.user_id = u.id and o.status not in ('cancelled', 'returned', 'refunded')) as total_spent,
+           (select max(o.placed_at) from public.orders o where o.user_id = u.id) as last_order_at
+    from auth.users u left join public.profiles p on p.id = u.id
+    where v_q is null or lower(coalesce(p.full_name, '')) like '%' || replace(replace(v_q, '%', ''), '_', '') || '%'
+       or lower(coalesce(u.email, '')) like '%' || replace(replace(v_q, '%', ''), '_', '') || '%'
+       or coalesce(p.phone, '') like '%' || replace(replace(v_q, '%', ''), '_', '') || '%'
+  )
+  select c.id, c.full_name, c.email, c.phone, c.joined_at, c.orders_count, c.total_spent, c.last_order_at, count(*) over () as total_count
+  from c order by c.joined_at desc limit least(greatest(coalesce(p_limit, 50), 1), 200) offset greatest(coalesce(p_offset, 0), 0);
+end
+$$;
+
+-- ---------- staff accounts (super admin) ----------
+create or replace function public.admin_list_staff()
+returns table (user_id uuid, email text, full_name text, roles public.app_role[])
+language plpgsql
+stable
+security definer
+set search_path = ''
+as $$
+begin
+  if not public.has_any_role('super_admin') then raise exception 'Not authorised'; end if;
+  return query
+  select ur.user_id, u.email::text, p.full_name, array_agg(ur.role order by ur.role)
+  from public.user_roles ur join auth.users u on u.id = ur.user_id left join public.profiles p on p.id = ur.user_id
+  group by ur.user_id, u.email, p.full_name order by u.email;
+end
+$$;
+
+-- Find an existing account by email so a role can be granted. Reveals nothing but the account id.
+create or replace function public.admin_find_user(p_email text)
+returns uuid
+language plpgsql
+stable
+security definer
+set search_path = ''
+as $$
+declare v uuid;
+begin
+  if not public.has_any_role('super_admin') then raise exception 'Not authorised'; end if;
+  select id into v from auth.users where lower(email) = lower(trim(coalesce(p_email, '')));
+  if v is null then raise exception 'No account with that email. Ask the person to register on the website first.'; end if;
+  return v;
+end
+$$;
+
+-- ---------- audit trail for content and settings edits ----------
+create or replace function public.audit_content_change()
+returns trigger
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  v_row jsonb := to_jsonb(case when tg_op = 'DELETE' then old else new end);
+  v_label text := coalesce(v_row ->> 'key', v_row ->> 'slug', v_row ->> 'code', v_row ->> 'name', v_row ->> 'title', v_row ->> 'label', v_row ->> 'id');
+begin
+  if auth.uid() is not null then
+    insert into public.admin_activity_logs (actor_id, action, entity_type, entity_id, details)
+    values (auth.uid(), tg_table_name || '.' || lower(tg_op), tg_table_name, left(coalesce(v_row ->> 'id', v_row ->> 'key', v_row ->> 'code'), 120),
+            jsonb_build_object('label', left(v_label, 120)));
+  end if;
+  return coalesce(new, old);
+end
+$$;
+
+do $$
+declare t text;
+begin
+  foreach t in array array['banners', 'hero_slides', 'homepage_sections', 'pages', 'menus', 'site_settings', 'coupons', 'delivery_zones', 'payment_methods', 'categories', 'user_roles'] loop
+    execute format('drop trigger if exists audit_content_change on public.%I', t);
+    execute format('create trigger audit_content_change after insert or update or delete on public.%I for each row execute function public.audit_content_change()', t);
+  end loop;
+end
+$$;
+
+-- ---------- privileges ----------
+revoke all on function public.submit_contact_message(text, text, text, text) from public;
+revoke all on function public.subscribe_newsletter(text) from public;
+grant execute on function public.submit_contact_message(text, text, text, text) to anon, authenticated;
+grant execute on function public.subscribe_newsletter(text) to anon, authenticated;
+revoke all on function public.admin_dashboard_stats() from public, anon;
+revoke all on function public.admin_list_customers(text, integer, integer) from public, anon;
+revoke all on function public.admin_list_staff() from public, anon;
+revoke all on function public.admin_find_user(text) from public, anon;
+grant execute on function public.admin_dashboard_stats() to authenticated;
+grant execute on function public.admin_list_customers(text, integer, integer) to authenticated;
+grant execute on function public.admin_list_staff() to authenticated;
+grant execute on function public.admin_find_user(text) to authenticated;

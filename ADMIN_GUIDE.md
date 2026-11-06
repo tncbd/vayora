@@ -33,6 +33,16 @@ Delivery rates come from Delivery Zones.
 
 How it works: when the advance is on and delivery is not free, the customer places the order, sends the delivery charge to your number, and submits the sender number and Transaction ID. The order waits as "pending payment verification" with stock reserved. Nothing is ever approved automatically. The customer pays the remaining amount in cash on delivery.
 
+## Website content and settings (Phase 8)
+- **Dashboard**: today's orders, payments to verify, low stock, new messages. Product managers do not see sales figures.
+- **Website Settings**: store name, phone, WhatsApp number (shows a chat button), email, address, social links, announcement bar, footer. Empty fields are simply hidden on the site.
+- **Hero Slider / Banners**: upload a photo, add text and a link. Optional start and end dates. With no slides, a simple welcome slide shows.
+- **Homepage Builder**: turn sections on or off and change their order and headings.
+- **Website Pages**: edit About, policies and FAQ. Use `## ` for headings. Replace every "DRAFT" text before launch.
+- **Navigation Menu**: add header links to replace the standard menu; footer headings with links under them.
+- **Reviews**: approve or reject. **Newsletter** and **Customers**: view and export CSV. **Contact Messages**: mark read/resolved.
+- **Admin Users** (Super Admin): add a role by the person's account email (they must sign up first). **Activity Logs**: who changed what.
+
 ## Orders (Phase 7)
 **Admin > Orders** (Super Admin, Admin, Order Manager). Open an order to see items, customer, address, payment and the full status history.
 - Status moves only forward: Pending review > Confirmed > Processing > Shipped > Out for delivery > Delivered (Returned and Refunded after that). Cancelling needs a reason.

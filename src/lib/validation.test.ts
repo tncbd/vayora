@@ -88,3 +88,17 @@ describe('checkoutSchema', () => {
     expect(checkoutSchema.safeParse({ ...ok, ...patch }).success).toBe(false);
   });
 });
+
+import { contactSchema } from './validation';
+describe('contactSchema', () => {
+  const ok = { name: 'Rahim', phone: '01712345678', email: '', message: 'Is this available?' };
+  it('needs a way to reply', () => {
+    expect(contactSchema.safeParse(ok).success).toBe(true);
+    expect(contactSchema.safeParse({ ...ok, phone: '', email: 'a@b.co' }).success).toBe(true);
+    expect(contactSchema.safeParse({ ...ok, phone: '', email: '' }).success).toBe(false);
+  });
+  it('rejects short names and messages', () => {
+    expect(contactSchema.safeParse({ ...ok, name: 'R' }).success).toBe(false);
+    expect(contactSchema.safeParse({ ...ok, message: 'hi' }).success).toBe(false);
+  });
+});

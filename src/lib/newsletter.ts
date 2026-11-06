@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { supabase } from './supabase';
 
 export const newsletterSchema = z.object({
   email: z.string().trim().min(1, 'Email is required').email('Enter a valid email address').max(254),
@@ -13,11 +14,9 @@ export class NotConnectedError extends Error {
   }
 }
 
-/**
- * Phase 1: there is no backend, so this intentionally FAILS rather than pretending
- * the subscription was saved. Phase 2/8 will insert into `newsletter_subscribers`
- * through Supabase (with RLS allowing insert-only for anonymous visitors).
- */
-export async function subscribeToNewsletter(_input: NewsletterInput): Promise<void> {
-  throw new NotConnectedError('Newsletter subscription');
+/** Saved through a database function that never reveals whether the address was already subscribed. */
+export async function subscribeToNewsletter(input: NewsletterInput): Promise<void> {
+  if (!supabase) throw new NotConnectedError('Newsletter subscription');
+  const { error } = await supabase.rpc('subscribe_newsletter', { p_email: input.email });
+  if (error) throw new Error(error.message.length < 120 ? error.message : 'Something went wrong. Please try again.');
 }

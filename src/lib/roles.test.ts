@@ -63,7 +63,7 @@ describe('safeRedirect', () => {
 describe('implemented sections', () => {
   it('only link finished screens, and every linked path is covered by the same role rules', () => {
     const linked = ADMIN_SECTIONS.filter((s) => s.path);
-    expect(linked.map((s) => s.key).sort()).toEqual(['categories', 'coupons', 'delivery-zones', 'inventory', 'orders', 'payment-settings', 'payment-verification', 'products', 'shipping-settings', 'subcategories', 'variants']);
-    for (const s of linked) expect(s.path).toMatch(/^\/admin\/[a-z-]+$/);
+    expect(linked.map((s) => s.key).sort()).toEqual(ADMIN_SECTIONS.filter((s) => s.phase <= 8).map((s) => s.key).sort());
+    for (const s of linked) expect(s.path).toMatch(/^\/admin(\/[a-z-]+)?$/);
   });
 });

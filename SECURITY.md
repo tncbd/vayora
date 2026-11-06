@@ -43,6 +43,13 @@
 - Payment screenshots go to a private bucket, readable only by the owner and payment staff, via short-lived links. Guests cannot upload files.
 - Merchant numbers are public by design (customers must see them), only for enabled methods.
 
+## Content and admin (Phase 8)
+- Contact form and newsletter sign-up are public RPCs with validation and a per-email/phone hourly limit; sign-up never reveals whether an email exists.
+- Admin lists (customers, staff) are role-checked functions; staff lookup is Super Admin only. The last Super Admin cannot be removed (database trigger).
+- Admin-entered links are accepted only as /paths or http(s); page text is plain text rendered as text, never HTML.
+- Content and role changes are written to the activity log (labels only, not values).
+- CSV exports neutralise spreadsheet formulas.
+
 ## Orders (Phase 7)
 - Order status cannot be changed by a direct table update from the browser (trigger); only `set_order_status()` (role-checked, audit-logged), `verify_payment()` and `expire_unpaid_orders()` can, and each keeps stock consistent.
 - Tracking needs the order number AND the phone on the order; it returns no address line, email or internal notes. Failed lookups give one generic message.

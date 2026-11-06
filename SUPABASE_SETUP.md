@@ -20,6 +20,7 @@ Run SQL in Supabase -> SQL Editor -> New query -> paste -> Run. **Never run a fi
 | Already has Phases 2-3 applied (migrations `20261103*`) | `supabase/apply_phase4.sql`, then `supabase/apply_phase5.sql` (each once, in this order) |
 | Already has Phase 4 applied | `supabase/apply_phase5.sql`, then `supabase/apply_phase6.sql` |
 | Already has Phase 5 applied | `supabase/apply_phase6.sql`, then `supabase/apply_phase7.sql` |
+| Already has Phase 7 applied | `supabase/apply_phase8.sql` only (content admin; adds functions and an audit trigger, changes no data) |
 | Already has Phase 6 applied | `supabase/apply_phase7.sql` only (order management and tracking; changes no data) |
 
 Both are generated from `supabase/migrations/` with `npm run db:bundle`. Never edit an applied migration; add a new one. Alternative: Supabase CLI (`supabase link --project-ref wmtzqwwtdsmlproxonsy`, then `supabase db push`).

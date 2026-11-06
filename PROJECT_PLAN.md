@@ -122,7 +122,13 @@ The brief requires that all business content be editable from admin and stored i
 - [x] Customer: My Orders, order detail with timeline, cancel before confirmation; public Track Order (order number + phone)
 - [ ] **You:** run `supabase/apply_phase7.sql`, then place and move a test order through the statuses
 - Not in this phase: email/SMS notifications (need a provider; not configured), refunds are recorded as a status only (money is returned outside the site)
-### PHASE 8 — Complete admin dashboard & all editable website settings  ⬜
+### PHASE 8 — Complete admin dashboard & all editable website settings  ✅ (pending your approval; not yet applied live)
+- [x] Migration 12: `submit_contact_message()`, `subscribe_newsletter()` (throttled, no data leak), `admin_dashboard_stats()`, `admin_list_customers()`, `admin_list_staff()`, `admin_find_user()`, audit trigger on content tables
+- [x] Storefront reads editable content: announcement bar, WhatsApp button, footer, header/footer menus, hero slides, promo banners, homepage section order, About/policy/FAQ pages, social links
+- [x] Admin: Dashboard (live numbers), Website Settings, Banners, Hero Slider, Homepage Builder, Website Pages, Navigation Menu, Reviews moderation, Newsletter (CSV), Contact Messages, Customers (CSV), Admin Users, Roles & Permissions, Activity Logs
+- [x] Real Contact page form
+- [ ] **You:** run `supabase/apply_phase7.sql` (if not yet) then `supabase/apply_phase8.sql`, fill Website Settings, upload hero and banner photos
+- Not in this phase: Blog (dropped from scope), email replies to contact messages (reply by phone/WhatsApp/email yourself)
 ### PHASE 9 — Analytics, SEO, reports, performance  ⬜
 ### PHASE 10 — Security audit, testing, documentation, deployment prep  ⬜
 

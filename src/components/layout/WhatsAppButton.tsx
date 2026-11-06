@@ -1,8 +1,9 @@
 import { MessageCircle } from 'lucide-react';
-import { siteSettings } from '@/data/placeholder';
+import { useSiteSettings } from '@/context/SiteContentContext';
 
 /** Only renders when a valid WhatsApp number (digits, country code included) is configured. */
 export function WhatsAppButton() {
+  const siteSettings = useSiteSettings();
   const number = siteSettings.whatsapp.replace(/\D/g, '');
   if (!/^\d{10,15}$/.test(siteSettings.whatsapp)) return null;
   return (

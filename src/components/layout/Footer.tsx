@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Facebook, Instagram, Youtube } from 'lucide-react';
-import { siteSettings } from '@/data/placeholder';
+import { useSiteContent } from '@/context/SiteContentContext';
 
 const shopLinks = [
   { label: 'Shop All', to: '/shop' },
@@ -43,6 +43,9 @@ function LinkColumn({ title, links }: { title: string; links: { label: string; t
 }
 
 export function Footer() {
+  const { settings: siteSettings, menus } = useSiteContent();
+  // footer columns come from Admin > Navigation Menu when set: each top-level item is a column heading
+  const custom = menus.footer.filter((m) => m.children.length > 0);
   const socials = [
     { label: 'Facebook', url: siteSettings.facebookUrl, Icon: Facebook },
     { label: 'Instagram', url: siteSettings.instagramUrl, Icon: Instagram },
@@ -74,9 +77,15 @@ export function Footer() {
             </ul>
           )}
         </div>
-        <LinkColumn title="Shop" links={shopLinks} />
-        <LinkColumn title="Customer Care" links={helpLinks} />
-        <LinkColumn title="Company" links={companyLinks} />
+        {custom.length > 0 ? (
+          custom.slice(0, 3).map((c) => <LinkColumn key={c.label} title={c.label} links={c.children} />)
+        ) : (
+          <>
+            <LinkColumn title="Shop" links={shopLinks} />
+            <LinkColumn title="Customer Care" links={helpLinks} />
+            <LinkColumn title="Company" links={companyLinks} />
+          </>
+        )}
       </div>
 
       <div className="border-t border-white/10">

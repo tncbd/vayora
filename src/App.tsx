@@ -2,6 +2,7 @@ import { Route, Routes } from 'react-router-dom';
 import { AuthProvider } from '@/context/AuthContext';
 import { WishlistProvider } from '@/context/WishlistContext';
 import { CartProvider } from '@/context/CartContext';
+import { SiteContentProvider } from '@/context/SiteContentContext';
 import Cart from '@/pages/Cart';
 import Checkout from '@/pages/Checkout';
 import OrderConfirmation from '@/pages/OrderConfirmation';
@@ -20,7 +21,8 @@ import AccountOrders from '@/pages/account/Orders';
 import AccountOrderDetail from '@/pages/account/OrderDetail';
 import TrackOrder from '@/pages/TrackOrder';
 import AdminLayout from '@/pages/admin/AdminLayout';
-import AdminHome from '@/pages/admin/AdminHome';
+import { Banners, HeroSlides, HomepageBuilder, WebsitePages, NavigationMenu } from '@/pages/admin/ContentScreens';
+import { Dashboard, WebsiteSettings, Reviews, Newsletter, Messages, Customers, AdminUsers, RolesPermissions, ActivityLogs } from '@/pages/admin/OpsScreens';
 import Categories from '@/pages/admin/Categories';
 import ProductList from '@/pages/admin/ProductList';
 import ProductEdit from '@/pages/admin/ProductEdit';
@@ -50,6 +52,7 @@ export default function App() {
   return (
     <AuthProvider>
     <WishlistProvider>
+    <SiteContentProvider>
     <CartProvider>
     <Routes>
       <Route element={<Layout />}>
@@ -102,7 +105,7 @@ export default function App() {
       {/* Admin (staff only; own layout, no storefront chrome) */}
       <Route path="admin" element={<RequireStaff />}>
         <Route element={<AdminLayout />}>
-          <Route index element={<AdminHome />} />
+          <Route index element={<Dashboard />} />
           <Route element={<RequireSection section="products" />}>
             <Route path="products" element={<ProductList />} />
             <Route path="products/new" element={<ProductEdit />} />
@@ -133,11 +136,51 @@ export default function App() {
             <Route path="orders" element={<AdminOrders />} />
             <Route path="orders/:id" element={<AdminOrderDetail />} />
           </Route>
-          <Route path="*" element={<AdminHome />} />
+          <Route element={<RequireSection section="banners" />}>
+            <Route path="banners" element={<Banners />} />
+          </Route>
+          <Route element={<RequireSection section="homepage-builder" />}>
+            <Route path="homepage-builder" element={<HomepageBuilder />} />
+          </Route>
+          <Route element={<RequireSection section="hero-slider" />}>
+            <Route path="hero-slider" element={<HeroSlides />} />
+          </Route>
+          <Route element={<RequireSection section="website-pages" />}>
+            <Route path="website-pages" element={<WebsitePages />} />
+          </Route>
+          <Route element={<RequireSection section="navigation-menu" />}>
+            <Route path="navigation-menu" element={<NavigationMenu />} />
+          </Route>
+          <Route element={<RequireSection section="website-settings" />}>
+            <Route path="website-settings" element={<WebsiteSettings />} />
+          </Route>
+          <Route element={<RequireSection section="reviews" />}>
+            <Route path="reviews" element={<Reviews />} />
+          </Route>
+          <Route element={<RequireSection section="newsletter" />}>
+            <Route path="newsletter" element={<Newsletter />} />
+          </Route>
+          <Route element={<RequireSection section="messages" />}>
+            <Route path="messages" element={<Messages />} />
+          </Route>
+          <Route element={<RequireSection section="customers" />}>
+            <Route path="customers" element={<Customers />} />
+          </Route>
+          <Route element={<RequireSection section="admin-users" />}>
+            <Route path="admin-users" element={<AdminUsers />} />
+          </Route>
+          <Route element={<RequireSection section="roles-permissions" />}>
+            <Route path="roles-permissions" element={<RolesPermissions />} />
+          </Route>
+          <Route element={<RequireSection section="activity-logs" />}>
+            <Route path="activity-logs" element={<ActivityLogs />} />
+          </Route>
+          <Route path="*" element={<Dashboard />} />
         </Route>
       </Route>
     </Routes>
     </CartProvider>
+    </SiteContentProvider>
     </WishlistProvider>
     </AuthProvider>
   );

@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.8.0 — Phase 8 (2026-11-07)
+- Editable website: settings, hero slider, banners, homepage sections, menus and pages managed in admin.
+- Admin dashboard with live numbers; reviews moderation, newsletter export, contact messages, customers, staff roles, activity logs.
+- Working Contact form and newsletter sign-up (throttled).
+- `apply_phase8.sql` for projects that already have Phase 7.
+
 ## 0.7.0 — Phase 7 (2026-11-06)
 - Admin order management with a strict status flow, notes, courier/tracking, invoice and packing slip, CSV export.
 - Customer My Orders, order timeline, cancel-before-confirmation, public Track Order.
