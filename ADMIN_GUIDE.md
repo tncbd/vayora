@@ -21,10 +21,20 @@ Notes
 
 ## How orders are priced (Phase 5)
 Customers can only choose products, sizes, colours and quantities. The database sets every price, the coupon discount and the delivery charge, and re-checks stock when the order is placed. Stock is reserved on order, so two customers can never buy the last item.
-Delivery rates come from Delivery Zones (screen arrives in Phase 6; see SUPABASE_SETUP.md for the SQL until then).
+Delivery rates come from Delivery Zones.
+
+## Delivery and advance payment (Phase 6)
+| Screen | Who | What |
+|---|---|---|
+| **Delivery Zones** | Super Admin, Admin | Charge per group of districts, optional free-delivery threshold, delivery days, priority. A warning lists districts no active zone covers (customers there cannot check out) |
+| **Checkout & Advance Payment** | Super Admin, Admin | Turn the advance delivery charge on/off, guest checkout, attempts per order, hours to pay |
+| **Payment Settings** | Super Admin, Admin, Payment Manager | Your bKash / Nagad / Upay numbers and instructions. A method needs a number before it can be enabled |
+| **Payment Verification** | Super Admin, Admin, Payment Manager | Compare each submission with your own bKash/Nagad/Upay account (amount, sender number, Transaction ID), then Verify or Reject with a reason. Verifying confirms the order. "Cancel expired unpaid orders" releases stock held by orders never paid |
+
+How it works: when the advance is on and delivery is not free, the customer places the order, sends the delivery charge to your number, and submits the sender number and Transaction ID. The order waits as "pending payment verification" with stock reserved. Nothing is ever approved automatically. The customer pays the remaining amount in cash on delivery.
 
 ## Not built yet
-Orders list and status handling (Phase 7), payment verification, customers, delivery zones screen, banners, homepage builder, reviews moderation, settings, reports (Phases 5-9). They are listed on the admin overview with their phase.
+Orders list and status handling (Phase 7), customers, banners, homepage builder, reviews moderation, settings, reports (Phases 5-9). They are listed on the admin overview with their phase.
 
 ## Roles
 | Role | Area |

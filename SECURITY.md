@@ -36,5 +36,12 @@
 - Edge Function: CORS allow-list, 20 KB body limit, per-IP brake. The brake is per function instance, so it is a soft limit; stronger rate limiting and bot protection are scheduled for Phase 10.
 - Remaining by design: coupon codes can be guessed by trial through `quote_order` (Phase 10 adds throttling).
 
+## Manual payments (Phase 6)
+- A payment can only become "verified" through `verify_payment()` (role-checked, audit-logged). Customers and the browser cannot change payment status (database trigger; tested).
+- Customers prove ownership of an order with its secret tracking token (guests) or by being signed in; the token is never listed or guessable.
+- Transaction IDs are unique, so one transaction cannot pay two orders. Resubmissions are capped per order.
+- Payment screenshots go to a private bucket, readable only by the owner and payment staff, via short-lived links. Guests cannot upload files.
+- Merchant numbers are public by design (customers must see them), only for enabled methods.
+
 ## Planned rules
 RLS on every sensitive table; server-side recalculation of prices, discounts, delivery and totals; backend-enforced roles; private `payment-proofs` bucket; audit logs; service role key only in Edge Functions.

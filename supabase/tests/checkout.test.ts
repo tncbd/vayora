@@ -263,7 +263,7 @@ describe('place_order', () => {
     await expect(place([])).rejects.toThrow();
   });
 
-  it('honours the guest-checkout setting and blocks the advance flow until Phase 6', async () => {
+  it('honours the guest-checkout setting and requires an enabled payment method for advance orders', async () => {
     await role('owner');
     await db.exec(`update public.site_settings set value = 'false' where key = 'allow_guest_checkout'`);
     await role('service_role');
@@ -272,7 +272,7 @@ describe('place_order', () => {
     await role('owner');
     await db.exec(`update public.site_settings set value = 'true' where key = 'allow_guest_checkout'; update public.site_settings set value = 'true' where key = 'delivery_advance_required'`);
     await role('service_role');
-    await expect(place([item('tee', 1)])).rejects.toThrow(/Advance/);
+    await expect(place([item('tee', 1)])).rejects.toThrow(/temporarily unavailable/);
     await role('owner');
     await db.exec(`update public.site_settings set value = 'false' where key = 'delivery_advance_required'`);
   });

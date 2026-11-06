@@ -7,6 +7,7 @@ import { useCart } from '@/context/CartContext';
 import { useQuote } from '@/hooks/useQuote';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { DISTRICTS } from '@/lib/districts';
+import { formatBDT } from '@/lib/format';
 import { LAST_ORDER_KEY, placeOrder } from '@/lib/checkoutApi';
 import { isSupabaseConfigured, supabase } from '@/lib/supabase';
 import { checkoutSchema, normalizeBdPhone, type CheckoutInput, type CheckoutOutput } from '@/lib/validation';
@@ -115,7 +116,7 @@ export default function Checkout() {
     const c = couponInput.trim().toUpperCase();
     if (c) setCoupon(c);
   };
-  const canPlace = !!quote && quote.ok && !quote.advanceRequired && !loading && !submitting && !!district;
+  const canPlace = !!quote && quote.ok && !loading && !submitting && !!district;
 
   return (
     <>
@@ -183,8 +184,12 @@ export default function Checkout() {
           {quote && quote.estimatedDaysMax !== null && !quote.deliveryError && (
             <p className="text-xs text-muted">Estimated delivery: {quote.estimatedDaysMin !== null && quote.estimatedDaysMin !== quote.estimatedDaysMax ? `${quote.estimatedDaysMin}–${quote.estimatedDaysMax}` : quote.estimatedDaysMax} days</p>
           )}
-          {quote && <p className="text-sm">You pay <span className="font-medium">৳{quote.total.toLocaleString('en-BD')}</span> in cash on delivery.</p>}
-          {quote?.advanceRequired && <FormMessage kind="info">An advance delivery-charge payment is required, and that step is not available yet. Please try again later.</FormMessage>}
+          {quote && !quote.advanceRequired && <p className="text-sm">You pay <span className="font-medium">{formatBDT(quote.total)}</span> in cash on delivery.</p>}
+          {quote?.advanceRequired && quote.advanceAmount > 0 && (
+            <FormMessage kind="info">
+              Pay the delivery charge ({formatBDT(quote.advanceAmount)}) in advance by bKash, Nagad or Upay after you place the order. The remaining {formatBDT(quote.codAmount)} is cash on delivery.
+            </FormMessage>
+          )}
           {submitError && <FormMessage kind="error">{submitError}</FormMessage>}
           <Button type="submit" className="w-full" disabled={!canPlace}>{submitting ? 'Placing order…' : 'Place Order'}</Button>
           {!district && <p className="text-xs text-muted">Select your district to see the delivery charge.</p>}

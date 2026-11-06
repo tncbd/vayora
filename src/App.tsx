@@ -23,6 +23,10 @@ import ProductList from '@/pages/admin/ProductList';
 import ProductEdit from '@/pages/admin/ProductEdit';
 import Inventory from '@/pages/admin/Inventory';
 import Coupons from '@/pages/admin/Coupons';
+import DeliveryZones from '@/pages/admin/DeliveryZones';
+import ShippingSettings from '@/pages/admin/ShippingSettings';
+import PaymentSettings from '@/pages/admin/PaymentSettings';
+import PaymentVerification from '@/pages/admin/PaymentVerification';
 import { Layout } from '@/components/layout/Layout';
 import Home from '@/pages/Home';
 import NotFound from '@/pages/NotFound';
@@ -107,6 +111,18 @@ export default function App() {
           </Route>
           <Route element={<RequireSection section="coupons" />}>
             <Route path="coupons" element={<Coupons />} />
+          </Route>
+          <Route element={<RequireSection section="delivery-zones" />}>
+            <Route path="delivery-zones" element={<DeliveryZones />} />
+          </Route>
+          <Route element={<RequireSection section="shipping-settings" />}>
+            <Route path="shipping-settings" element={<ShippingSettings />} />
+          </Route>
+          <Route element={<RequireSection section="payment-settings" />}>
+            <Route path="payment-settings" element={<PaymentSettings />} />
+          </Route>
+          <Route element={<RequireSection section="payment-verification" />}>
+            <Route path="payment-verification" element={<PaymentVerification />} />
           </Route>
           <Route path="*" element={<AdminHome />} />
         </Route>

@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.6.0 — Phase 6 (2026-11-06)
+- Manual advance delivery-charge payment (bKash / Nagad / Upay): customer submits Transaction ID, staff verify; remaining amount is cash on delivery.
+- Unpaid advance orders can be cancelled after the payment window, releasing their stock.
+- Admin: Delivery Zones, Checkout & Advance Payment settings, Payment Settings, Payment Verification.
+- `apply_phase6.sql` for projects that already have Phase 5.
+
 ## 0.5.0 — Phase 5 (2026-11-05)
 - Cart, checkout (guest or signed-in), order confirmation, Add to Cart / Buy Now, header cart count.
 - Server-side pricing: `quote_order()` and `place_order()`; `place-order` Edge Function; stock is reserved at order time; duplicate submissions are ignored.

@@ -18,7 +18,8 @@ Run SQL in Supabase -> SQL Editor -> New query -> paste -> Run. **Never run a fi
 |---|---|
 | Brand new, empty project | `supabase/apply_all.sql` (everything) |
 | Already has Phases 2-3 applied (migrations `20261103*`) | `supabase/apply_phase4.sql`, then `supabase/apply_phase5.sql` (each once, in this order) |
-| Already has Phase 4 applied | `supabase/apply_phase5.sql` only (adds server-side pricing, coupons and order placement; changes no data) |
+| Already has Phase 4 applied | `supabase/apply_phase5.sql`, then `supabase/apply_phase6.sql` |
+| Already has Phase 5 applied | `supabase/apply_phase6.sql` only (manual advance payment; changes no data) |
 
 Both are generated from `supabase/migrations/` with `npm run db:bundle`. Never edit an applied migration; add a new one. Alternative: Supabase CLI (`supabase link --project-ref wmtzqwwtdsmlproxonsy`, then `supabase db push`).
 
@@ -32,8 +33,8 @@ Orders are created only by this function (it uses the service role key, which Su
 4. Deploy: `supabase functions deploy place-order`
 Without step 4 checkout will show "We could not place your order".
 
-### Phase 5: turn delivery on (until the Phase 6 screen exists)
-Delivery zones are seeded inactive with a 0 charge, so checkout says "We do not deliver to this district yet" until you set real rates. Edit the numbers, then run once in the SQL Editor:
+### Phase 5: turn delivery on
+Use **Admin > Delivery Zones** (Phase 6). Or, with SQL: delivery zones are seeded inactive with a 0 charge, so checkout says "We do not deliver to this district yet" until you set real rates. Edit the numbers, then run once in the SQL Editor:
 ```sql
 update public.delivery_zones set charge = 80,  is_active = true, estimated_days_min = 1, estimated_days_max = 3 where name = 'Inside Dhaka';
 update public.delivery_zones set charge = 130, is_active = true, estimated_days_min = 3, estimated_days_max = 5 where name = 'Outside Dhaka';

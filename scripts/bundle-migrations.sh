@@ -11,4 +11,5 @@ bundle() { # output, glob
 }
 bundle supabase/apply_all.sql "supabase/migrations/*.sql"
 bundle supabase/apply_phase4.sql "supabase/migrations/20261104*.sql"
-bundle supabase/apply_phase5.sql "supabase/migrations/20261105*.sql"
+bundle supabase/apply_phase5.sql "supabase/migrations/20261105000001*.sql"
+bundle supabase/apply_phase6.sql "supabase/migrations/20261105000002*.sql"

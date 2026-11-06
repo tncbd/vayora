@@ -110,7 +110,12 @@ The brief requires that all business content be editable from admin and stored i
 - [x] Admin Coupons screen
 - [ ] **You:** run `supabase/apply_phase5.sql`, deploy the function, set delivery rates, then test (see SUPABASE_SETUP.md)
 - Not in this phase: advance delivery-charge payment (checkout refuses it until Phase 6), order tracking and history (Phase 7), delivery zones screen (Phase 6), cart sync across devices (cart lives in the browser)
-### PHASE 6 — Delivery management; bKash / Nagad / Upay manual advance payment  ⬜
+### PHASE 6 — Delivery management; bKash / Nagad / Upay manual advance payment  ✅ (pending your approval; not yet applied live)
+- [x] Migration 10: advance split (delivery charge paid in advance, rest COD), `get_payment_info`, `submit_payment`, `expire_unpaid_orders`; PostgreSQL tests for the whole flow
+- [x] Checkout shows advance vs cash on delivery; confirmation page has the payment panel (method, sender number, Transaction ID, optional screenshot for signed-in customers)
+- [x] Admin: Delivery Zones (districts, charge, free-delivery threshold, days, priority, coverage warning), Checkout & Advance Payment settings, Payment Settings (your numbers), Payment Verification (verify/reject, screenshot, cancel expired unpaid orders)
+- [ ] **You:** run `supabase/apply_phase6.sql`, set your payment numbers, test
+- Not in this phase: guest screenshot upload (guests submit Transaction ID only), order tracking and order status screens (Phase 7), automatic scheduled cancellation (button for now)
 ### PHASE 7 — Order management, customer dashboard, tracking  ⬜
 ### PHASE 8 — Complete admin dashboard & all editable website settings  ⬜
 ### PHASE 9 — Analytics, SEO, reports, performance  ⬜

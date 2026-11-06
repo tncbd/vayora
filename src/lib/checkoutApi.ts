@@ -37,6 +37,8 @@ export interface Quote {
   couponError: string | null;
   total: number;
   advanceRequired: boolean;
+  advanceAmount: number;
+  codAmount: number;
 }
 
 const n = (v: unknown) => (v === null || v === undefined ? 0 : Number(v));
@@ -53,7 +55,7 @@ export function mapQuote(r: Row): Quote {
     subtotal: n(r.subtotal), discountTotal: n(r.discount_total), deliveryCharge: n(r.delivery_charge), freeDelivery: !!r.free_delivery,
     deliveryZoneName: r.delivery_zone_name ?? null, estimatedDaysMin: nn(r.estimated_days_min), estimatedDaysMax: nn(r.estimated_days_max),
     deliveryError: r.delivery_error ?? null, couponCode: r.coupon_code ?? null, couponError: r.coupon_error ?? null,
-    total: n(r.total), advanceRequired: !!r.advance_required,
+    total: n(r.total), advanceRequired: !!r.advance_required, advanceAmount: n(r.advance_amount), codAmount: n(r.cod_amount ?? r.total),
   };
 }
 
@@ -80,6 +82,9 @@ export interface PlaceOrderInput {
 }
 
 export interface PlacedOrder {
+  orderId: string;
+  /** Secret that lets the guest who placed the order submit its payment. Kept in this tab's session only. */
+  trackingToken: string;
   orderNumber: string;
   subtotal: number;
   discountTotal: number;
@@ -111,7 +116,7 @@ export async function placeOrder(input: PlaceOrderInput): Promise<PlacedOrder> {
   }
   const r = data as Row;
   return {
-    orderNumber: r.order_number, subtotal: n(r.subtotal), discountTotal: n(r.discount_total), deliveryCharge: n(r.delivery_charge),
+    orderId: r.order_id, trackingToken: r.tracking_token, orderNumber: r.order_number, subtotal: n(r.subtotal), discountTotal: n(r.discount_total), deliveryCharge: n(r.delivery_charge),
     total: n(r.total), advanceAmount: n(r.advance_amount), codAmount: n(r.cod_amount),
   };
 }
