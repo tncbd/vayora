@@ -75,14 +75,14 @@ export function HeroSlider() {
           <button
             onClick={() => go(index - 1)}
             aria-label="Previous slide"
-            className="absolute left-3 top-1/2 hidden -translate-y-1/2 border border-white/30 p-2.5 text-white transition-colors hover:bg-white hover:text-primary sm:block"
+            className="absolute bottom-4 right-16 hidden border border-white/30 p-2.5 text-white transition-colors hover:bg-white hover:text-primary sm:block"
           >
             <ChevronLeft size={20} />
           </button>
           <button
             onClick={() => go(index + 1)}
             aria-label="Next slide"
-            className="absolute right-3 top-1/2 hidden -translate-y-1/2 border border-white/30 p-2.5 text-white transition-colors hover:bg-white hover:text-primary sm:block"
+            className="absolute bottom-4 right-4 hidden border border-white/30 p-2.5 text-white transition-colors hover:bg-white hover:text-primary sm:block"
           >
             <ChevronRight size={20} />
           </button>
