@@ -33,6 +33,16 @@ Delivery rates come from Delivery Zones.
 
 How it works: when the advance is on and delivery is not free, the customer places the order, sends the delivery charge to your number, and submits the sender number and Transaction ID. The order waits as "pending payment verification" with stock reserved. Nothing is ever approved automatically. The customer pays the remaining amount in cash on delivery.
 
+## Orders (Phase 7)
+**Admin > Orders** (Super Admin, Admin, Order Manager). Open an order to see items, customer, address, payment and the full status history.
+- Status moves only forward: Pending review > Confirmed > Processing > Shipped > Out for delivery > Delivered (Returned and Refunded after that). Cancelling needs a reason.
+- Stock follows the status automatically: cancelling releases it; shipping deducts it for good; a returned order puts stock back.
+- Shipping needs a courier company; add the courier tracking number so customers can see it.
+- Each status change can carry a note, shown to the customer on their tracking page (untick "show customer" to keep it private). Internal notes are never shown to customers.
+- Orders waiting for an advance payment are confirmed by verifying the payment (Payment Verification), not by hand.
+- **Print** gives an invoice or packing slip. **Export CSV** downloads the filtered list.
+Customers see their orders under My Account, can cancel before you confirm, and anyone can track at /track-order with the order number and phone.
+
 ## Not built yet
 Orders list and status handling (Phase 7), customers, banners, homepage builder, reviews moderation, settings, reports (Phases 5-9). They are listed on the admin overview with their phase.
 

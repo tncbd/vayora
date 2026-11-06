@@ -16,6 +16,9 @@ import AccountLayout from '@/pages/account/AccountLayout';
 import Overview from '@/pages/account/Overview';
 import Profile from '@/pages/account/Profile';
 import Addresses from '@/pages/account/Addresses';
+import AccountOrders from '@/pages/account/Orders';
+import AccountOrderDetail from '@/pages/account/OrderDetail';
+import TrackOrder from '@/pages/TrackOrder';
 import AdminLayout from '@/pages/admin/AdminLayout';
 import AdminHome from '@/pages/admin/AdminHome';
 import Categories from '@/pages/admin/Categories';
@@ -23,6 +26,8 @@ import ProductList from '@/pages/admin/ProductList';
 import ProductEdit from '@/pages/admin/ProductEdit';
 import Inventory from '@/pages/admin/Inventory';
 import Coupons from '@/pages/admin/Coupons';
+import AdminOrders from '@/pages/admin/Orders';
+import AdminOrderDetail from '@/pages/admin/OrderDetail';
 import DeliveryZones from '@/pages/admin/DeliveryZones';
 import ShippingSettings from '@/pages/admin/ShippingSettings';
 import PaymentSettings from '@/pages/admin/PaymentSettings';
@@ -30,7 +35,6 @@ import PaymentVerification from '@/pages/admin/PaymentVerification';
 import { Layout } from '@/components/layout/Layout';
 import Home from '@/pages/Home';
 import NotFound from '@/pages/NotFound';
-import Scaffold from '@/pages/Scaffold';
 import { CategoryPage, CollectionPage, GenderPage, SearchPage, ShopAll } from '@/pages/Listing';
 import {
   AboutPage,
@@ -64,7 +68,7 @@ export default function App() {
         <Route path="cart" element={<Cart />} />
         <Route path="checkout" element={<Checkout />} />
         <Route path="order-confirmation" element={<OrderConfirmation />} />
-        <Route path="track-order" element={<Scaffold title="Order Tracking" phase={7} phaseLabel="Orders" description="Order tracking is built in Phase 7." />} />
+        <Route path="track-order" element={<TrackOrder />} />
 
         {/* Authentication */}
         <Route path="login" element={<Login />} />
@@ -78,7 +82,8 @@ export default function App() {
             <Route index element={<Overview />} />
             <Route path="profile" element={<Profile />} />
             <Route path="addresses" element={<Addresses />} />
-            <Route path="orders" element={<Scaffold embedded title="My Orders" phase={7} phaseLabel="Orders" description="Order history is built in Phase 7." />} />
+            <Route path="orders" element={<AccountOrders />} />
+            <Route path="orders/:orderNumber" element={<AccountOrderDetail />} />
             <Route path="wishlist" element={<Wishlist />} />
           </Route>
         </Route>
@@ -123,6 +128,10 @@ export default function App() {
           </Route>
           <Route element={<RequireSection section="payment-verification" />}>
             <Route path="payment-verification" element={<PaymentVerification />} />
+          </Route>
+          <Route element={<RequireSection section="orders" />}>
+            <Route path="orders" element={<AdminOrders />} />
+            <Route path="orders/:id" element={<AdminOrderDetail />} />
           </Route>
           <Route path="*" element={<AdminHome />} />
         </Route>

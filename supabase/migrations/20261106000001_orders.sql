@@ -1,0 +1,180 @@
+-- Phase 7: order management, customer cancellation and public tracking.
+-- Additive. Order status can now change ONLY through set_order_status() (or the existing definer
+-- functions verify_payment / expire_unpaid_orders), so stock is always kept in step with status.
+
+-- ---------- allowed status flow ----------
+create or replace function public.allowed_next_statuses(p_from public.order_status)
+returns public.order_status[]
+language sql
+immutable
+set search_path = ''
+as $$
+  select (case p_from
+    when 'pending_payment_verification' then array['cancelled']::text[]
+    when 'pending_order_review' then array['confirmed', 'cancelled']::text[]
+    when 'confirmed'            then array['processing', 'cancelled']::text[]
+    when 'processing'           then array['shipped', 'cancelled']::text[]
+    when 'shipped'              then array['out_for_delivery', 'delivered', 'returned']::text[]
+    when 'out_for_delivery'     then array['delivered', 'returned']::text[]
+    when 'delivered'            then array['returned', 'refunded']::text[]
+    when 'returned'             then array['refunded']::text[]
+    else array[]::text[]
+  end::text[])::public.order_status[];
+$$;
+
+-- ---------- clients cannot change status directly (stock would drift) ----------
+create or replace function public.guard_order_status()
+returns trigger
+language plpgsql
+set search_path = ''
+as $$
+begin
+  if new.status is distinct from old.status and current_user in ('authenticated', 'anon') then
+    raise exception 'Order status can only be changed through set_order_status()';
+  end if;
+  return new;
+end
+$$;
+drop trigger if exists guard_order_status on public.orders;
+create trigger guard_order_status
+  before update on public.orders
+  for each row execute function public.guard_order_status();
+
+-- ---------- internal: stock effect of a status change ----------
+create or replace function public._apply_stock_for_status(p_order_id uuid, p_from public.order_status, p_to public.order_status)
+returns void
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  i record;
+  v_pre_ship boolean := p_from in ('pending_payment_verification', 'pending_order_review', 'confirmed', 'processing');
+begin
+  for i in select variant_id, quantity from public.order_items where order_id = p_order_id and variant_id is not null loop
+    if p_to = 'cancelled' and v_pre_ship then
+      perform public.release_stock(i.variant_id, i.quantity);             -- reservation freed
+    elsif p_to = 'shipped' and v_pre_ship then
+      perform public.commit_stock(i.variant_id, i.quantity);              -- goods leave: reserved -> sold
+    elsif p_to = 'returned' then
+      update public.inventory set quantity = quantity + i.quantity where variant_id = i.variant_id; -- goods back on the shelf
+    end if;
+  end loop;
+end
+$$;
+revoke all on function public._apply_stock_for_status(uuid, public.order_status, public.order_status) from public, anon, authenticated;
+
+-- ---------- staff: change an order's status ----------
+create or replace function public.set_order_status(
+  p_order_id uuid, p_new public.order_status, p_note text default null, p_public boolean default true,
+  p_courier text default null, p_tracking_number text default null
+) returns void
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  o public.orders;
+  v_note text := nullif(left(trim(coalesce(p_note, '')), 500), '');
+begin
+  if not public.has_any_role('super_admin', 'admin', 'order_manager') then
+    raise exception 'Not authorised';
+  end if;
+  select * into o from public.orders where id = p_order_id for update;
+  if not found then raise exception 'Order not found'; end if;
+  if not (p_new = any (public.allowed_next_statuses(o.status))) then
+    raise exception 'An order that is "%" cannot be moved to "%".', o.status, p_new;
+  end if;
+  if p_new = 'cancelled' and v_note is null then raise exception 'Add a reason for cancelling'; end if;
+  if p_new = 'shipped' and nullif(trim(coalesce(p_courier, o.courier_company, '')), '') is null then
+    raise exception 'Add the courier company before marking the order as shipped';
+  end if;
+  -- an unpaid-advance order is confirmed only by verify_payment(); a paid one never cancels silently
+  if o.status = 'pending_payment_verification' and p_new = 'cancelled'
+     and exists (select 1 from public.payments where order_id = o.id and status = 'submitted') then
+    raise exception 'A payment is waiting for verification. Verify or reject it first.';
+  end if;
+
+  perform public._apply_stock_for_status(o.id, o.status, p_new);
+
+  update public.orders
+     set status = p_new,
+         courier_company = coalesce(nullif(trim(coalesce(p_courier, '')), ''), courier_company),
+         tracking_number = coalesce(nullif(trim(coalesce(p_tracking_number, '')), ''), tracking_number)
+   where id = o.id;
+
+  -- the trigger wrote the history row inside this transaction; attach the note and visibility
+  update public.order_status_history
+     set note = v_note, is_public = coalesce(p_public, true)
+   where order_id = o.id and to_status = p_new and created_at = now();
+
+  insert into public.admin_activity_logs (actor_id, action, entity_type, entity_id, details)
+  values (auth.uid(), 'order.status', 'order', o.id::text,
+          jsonb_build_object('order_number', o.order_number, 'from', o.status, 'to', p_new));
+end
+$$;
+
+-- ---------- customer: cancel before the shop has confirmed the order ----------
+create or replace function public.cancel_my_order(p_order_id uuid, p_tracking_token uuid default null)
+returns void
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare o public.orders;
+begin
+  select * into o from public.orders where id = p_order_id for update;
+  if not found or not coalesce((p_tracking_token is not null and o.tracking_token = p_tracking_token)
+                               or (auth.uid() is not null and o.user_id is not null and o.user_id = auth.uid()), false) then
+    raise exception 'Order not found.';
+  end if;
+  if o.status not in ('pending_payment_verification', 'pending_order_review') then
+    raise exception 'This order can no longer be cancelled online. Please contact us.';
+  end if;
+  if exists (select 1 from public.payments where order_id = o.id and status in ('submitted', 'verified')) then
+    raise exception 'A payment has been submitted for this order. Please contact us to cancel it.';
+  end if;
+  perform public._apply_stock_for_status(o.id, o.status, 'cancelled');
+  update public.orders set status = 'cancelled' where id = o.id;
+  update public.order_status_history set note = 'Cancelled by customer', is_public = true
+   where order_id = o.id and to_status = 'cancelled' and created_at = now();
+end
+$$;
+
+-- ---------- public tracking: order number + the phone number used on the order ----------
+create or replace function public.track_order(p_order_number text, p_phone text)
+returns jsonb
+language plpgsql
+stable
+security definer
+set search_path = ''
+as $$
+declare
+  o public.orders;
+  v_phone text := regexp_replace(coalesce(p_phone, ''), '^(\+?88)', '');
+begin
+  select * into o from public.orders
+   where order_number = upper(trim(coalesce(p_order_number, ''))) and phone = v_phone;
+  if not found then raise exception 'No order found for these details.'; end if;
+  return jsonb_build_object(
+    'order_id', o.id, 'order_number', o.order_number, 'status', o.status, 'placed_at', o.placed_at,
+    'district', o.district, 'area', o.area,
+    'subtotal', o.subtotal, 'discount_total', o.discount_total, 'delivery_charge', o.delivery_charge,
+    'total', o.total, 'advance_amount', o.advance_amount, 'cod_amount', o.cod_amount,
+    'courier_company', o.courier_company, 'tracking_number', o.tracking_number,
+    'items', coalesce((select jsonb_agg(jsonb_build_object('name', i.product_name, 'size', i.size, 'color', i.color,
+                         'quantity', i.quantity, 'line_total', i.line_total, 'image_url', i.image_url) order by i.product_name)
+                       from public.order_items i where i.order_id = o.id), '[]'::jsonb),
+    'history', coalesce((select jsonb_agg(jsonb_build_object('status', h.to_status, 'note', h.note, 'at', h.created_at) order by h.created_at, h.id)
+                         from public.order_status_history h where h.order_id = o.id and h.is_public), '[]'::jsonb));
+end
+$$;
+
+-- ---------- privileges ----------
+revoke all on function public.set_order_status(uuid, public.order_status, text, boolean, text, text) from public, anon;
+grant execute on function public.set_order_status(uuid, public.order_status, text, boolean, text, text) to authenticated;
+revoke all on function public.cancel_my_order(uuid, uuid) from public;
+grant execute on function public.cancel_my_order(uuid, uuid) to anon, authenticated;
+revoke all on function public.track_order(text, text) from public;
+grant execute on function public.track_order(text, text) to anon, authenticated;
+grant execute on function public.allowed_next_statuses(public.order_status) to anon, authenticated;

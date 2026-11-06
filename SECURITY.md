@@ -43,5 +43,11 @@
 - Payment screenshots go to a private bucket, readable only by the owner and payment staff, via short-lived links. Guests cannot upload files.
 - Merchant numbers are public by design (customers must see them), only for enabled methods.
 
+## Orders (Phase 7)
+- Order status cannot be changed by a direct table update from the browser (trigger); only `set_order_status()` (role-checked, audit-logged), `verify_payment()` and `expire_unpaid_orders()` can, and each keeps stock consistent.
+- Tracking needs the order number AND the phone on the order; it returns no address line, email or internal notes. Failed lookups give one generic message.
+- Customers can cancel only before confirmation, only their own order (or with its secret token).
+- Throttling of repeated tracking lookups is scheduled for Phase 10.
+
 ## Planned rules
 RLS on every sensitive table; server-side recalculation of prices, discounts, delivery and totals; backend-enforced roles; private `payment-proofs` bucket; audit logs; service role key only in Edge Functions.

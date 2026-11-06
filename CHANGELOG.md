@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.7.0 — Phase 7 (2026-11-06)
+- Admin order management with a strict status flow, notes, courier/tracking, invoice and packing slip, CSV export.
+- Customer My Orders, order timeline, cancel-before-confirmation, public Track Order.
+- Order status can change only through `set_order_status()` so stock never drifts from status.
+- `apply_phase7.sql` for projects that already have Phase 6.
+
 ## 0.6.0 — Phase 6 (2026-11-06)
 - Manual advance delivery-charge payment (bKash / Nagad / Upay): customer submits Transaction ID, staff verify; remaining amount is cash on delivery.
 - Unpaid advance orders can be cancelled after the payment window, releasing their stock.

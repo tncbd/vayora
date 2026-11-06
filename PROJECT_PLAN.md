@@ -116,7 +116,12 @@ The brief requires that all business content be editable from admin and stored i
 - [x] Admin: Delivery Zones (districts, charge, free-delivery threshold, days, priority, coverage warning), Checkout & Advance Payment settings, Payment Settings (your numbers), Payment Verification (verify/reject, screenshot, cancel expired unpaid orders)
 - [ ] **You:** run `supabase/apply_phase6.sql`, set your payment numbers, test
 - Not in this phase: guest screenshot upload (guests submit Transaction ID only), order tracking and order status screens (Phase 7), automatic scheduled cancellation (button for now)
-### PHASE 7 — Order management, customer dashboard, tracking  ⬜
+### PHASE 7 — Order management, customer dashboard, tracking  ✅ (pending your approval; not yet applied live)
+- [x] Migration 11: strict status flow, `set_order_status()` (stock follows status), `cancel_my_order()`, `track_order()`; status can no longer be changed directly from the browser
+- [x] Admin Orders: search, status filter, pagination, CSV export, order detail (items, customer, payment, history), status changes with notes, courier and tracking number, internal notes, print invoice / packing slip
+- [x] Customer: My Orders, order detail with timeline, cancel before confirmation; public Track Order (order number + phone)
+- [ ] **You:** run `supabase/apply_phase7.sql`, then place and move a test order through the statuses
+- Not in this phase: email/SMS notifications (need a provider; not configured), refunds are recorded as a status only (money is returned outside the site)
 ### PHASE 8 — Complete admin dashboard & all editable website settings  ⬜
 ### PHASE 9 — Analytics, SEO, reports, performance  ⬜
 ### PHASE 10 — Security audit, testing, documentation, deployment prep  ⬜

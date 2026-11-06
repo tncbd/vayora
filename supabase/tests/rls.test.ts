@@ -325,15 +325,12 @@ describe('orders', () => {
                     values ('x','01711111111','D','a','b',1200,80,1280,80,1200)`);
   });
 
-  it('lets order managers change status (recorded in history) but never money', async () => {
+  it('lets order managers edit shipping details but never money or status directly', async () => {
     await as(U.orderMgr);
-    await db.query(`update public.orders set status = 'pending_order_review', courier_company = 'Pathao', tracking_number = 'T-1' where id = $1`, [orderId]);
+    await db.query(`update public.orders set courier_company = 'Pathao', tracking_number = 'T-1' where id = $1`, [orderId]);
+    await expect(db.query(`update public.orders set status = 'shipped' where id = $1`, [orderId])).rejects.toThrow(/set_order_status/);
     await expect(db.query(`update public.orders set total = 1, cod_amount = 1, subtotal = 1, delivery_charge = 0, advance_amount = 0 where id = $1`, [orderId])).rejects.toThrow(/immutable/);
     await expect(db.query(`update public.orders set user_id = $2 where id = $1`, [orderId, U.bob])).rejects.toThrow(/immutable/);
-    await asOwner();
-    const h = await rows<{ changed_by: string; to_status: string }>(`select changed_by, to_status from public.order_status_history where order_id = $1 order by created_at, id`, [orderId]);
-    expect(h.at(-1)).toMatchObject({ changed_by: U.orderMgr, to_status: 'pending_order_review' });
-    await db.query(`update public.orders set status = 'pending_payment_verification' where id = $1`, [orderId]);
   });
 
   it('does not let a product manager touch orders', async () => {

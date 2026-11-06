@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/Button';
 import { Field, FormMessage } from '@/components/ui/Field';
 
 /** Advance delivery-charge payment: customer pays by bKash/Nagad/Upay Send Money, then submits the details for manual verification. */
-export function PaymentPanel({ orderId, token }: { orderId: string; token: string }) {
+export function PaymentPanel({ orderId, token }: { orderId: string; token: string | null }) {
   const { user } = useAuth();
   const { data: info, loading, error, reload } = useAsync(() => getPaymentInfo(orderId, token), [orderId, token]);
   const [submitError, setSubmitError] = useState<string | null>(null);

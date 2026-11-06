@@ -11,8 +11,8 @@ export default function AdminLayout() {
   // one link per finished screen (several sections can share a screen)
   const links = [...new Map(sectionsFor(roles).filter((x) => x.path).map((x) => [x.path as string, x.label])).entries()];
   return (
-    <div className="min-h-screen bg-secondary">
-      <header className="border-b border-line bg-primary text-white">
+    <div className="min-h-screen bg-secondary print:bg-white">
+      <header className="border-b border-line bg-primary text-white print:hidden">
         <div className="container-page flex h-14 items-center justify-between gap-4">
           <p className="font-display text-xl font-semibold tracking-[0.12em]">
             VAYORA <span className="ml-2 text-[10px] font-sans font-medium uppercase tracking-[0.3em] text-accent">Admin</span>
@@ -31,7 +31,7 @@ export default function AdminLayout() {
           </div>
         </div>
       </header>
-      <nav aria-label="Admin" className="border-b border-line bg-white">
+      <nav aria-label="Admin" className="border-b border-line bg-white print:hidden">
         <div className="container-page flex flex-wrap gap-x-6 gap-y-2 py-3 text-xs font-medium uppercase tracking-[0.14em]">
           <NavLink to="/admin" end className={({ isActive }) => (isActive ? 'text-accent-dark' : 'text-primary hover:text-accent-dark')}>Overview</NavLink>
           {links.map(([path, label]) => (

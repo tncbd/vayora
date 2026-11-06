@@ -40,7 +40,7 @@ export const ADMIN_SECTIONS: readonly AdminSection[] = [
   { key: 'subcategories', label: 'Subcategories', roles: CAT, phase: 4, path: '/admin/categories' },
   { key: 'variants', label: 'Product Variants', roles: CAT, phase: 4, path: '/admin/products' },
   { key: 'inventory', label: 'Inventory', roles: CAT, phase: 4, path: '/admin/inventory' },
-  { key: 'orders', label: 'Orders', roles: ORD, phase: 7 },
+  { key: 'orders', label: 'Orders', roles: ORD, phase: 7, path: '/admin/orders' },
   { key: 'payment-verification', label: 'Payment Verification', roles: PAY, phase: 6, path: '/admin/payment-verification' },
   { key: 'customers', label: 'Customers', roles: ORD, phase: 8 },
   { key: 'delivery-zones', label: 'Delivery Zones', roles: ADM, phase: 6, path: '/admin/delivery-zones' },
