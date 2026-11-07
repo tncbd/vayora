@@ -74,6 +74,24 @@ const PAGES: ResourceConfig = {
   confirmDelete: (r) => `Delete the page "${r.title}"? Its link will stop working.`,
 };
 
+const BLOG: ResourceConfig = {
+  table: 'blog_posts', title: 'Blog Posts', singular: 'Post', orderBy: ['created_at'], activeField: 'is_published', bucket: 'banners',
+  subtitle: 'Articles shown at /blog. A post is visible only when Published is ticked and its publish date has passed. Add a Blog link in Navigation Menu, or it appears in the footer once a post is published.',
+  defaults: { is_published: false },
+  fields: [
+    { name: 'title', label: 'Title', type: 'text', required: true, max: 140, list: true },
+    { name: 'slug', label: 'Address (slug)', type: 'slug', required: true, max: 100, fixed: true, list: true, hint: 'Set once when created, e.g. eid-style-guide. The article link will be /blog/eid-style-guide.' },
+    { name: 'cover_image_url', label: 'Cover photo', type: 'image', hint: 'Landscape, at least 1200 px wide. This is also the picture shown when the article is shared.' },
+    { name: 'excerpt', label: 'Short summary', type: 'textarea', max: 300, rows: 2, hint: 'Shown on the blog list and in Google/WhatsApp previews.' },
+    { name: 'content', label: 'Article', type: 'textarea', required: true, max: 50000, rows: 16, hint: 'Start a line with ## for a heading. Leave a blank line between paragraphs. Plain text only.' },
+    { name: 'published_at', label: 'Publish date (optional)', type: 'datetime', list: true, hint: 'Leave empty to publish immediately when ticked. Set a future date to schedule.' },
+    { name: 'seo_title', label: 'Search engine title (optional)', type: 'text', max: 70 },
+    { name: 'seo_description', label: 'Search engine description (optional)', type: 'textarea', max: 160, rows: 2 },
+    { name: 'is_published', label: 'Published', type: 'bool' },
+  ],
+  confirmDelete: (r) => `Delete the post "${r.title}"? Its link will stop working.`,
+};
+
 const MENUS: ResourceConfig = {
   table: 'menus', title: 'Navigation Menu', singular: 'Menu item', orderBy: ['location', 'sort_order'], activeField: 'is_active',
   subtitle: 'Header links override the built-in navigation as soon as you add one (leave empty to keep the standard menu with category dropdowns). For the footer, add a heading item, then links under it using "Parent"; up to three headings show as columns.',
@@ -102,4 +120,5 @@ export const Banners = () => <ResourceAdmin cfg={BANNERS} />;
 export const HeroSlides = () => <ResourceAdmin cfg={HERO} />;
 export const HomepageBuilder = () => <ResourceAdmin cfg={HOME} />;
 export const WebsitePages = () => <ResourceAdmin cfg={PAGES} />;
+export const BlogPosts = () => <ResourceAdmin cfg={BLOG} />;
 export const NavigationMenu = () => <ResourceAdmin cfg={MENUS} />;

@@ -59,11 +59,15 @@ const Banners = lazy(() => content().then((m) => ({ default: m.Banners })));
 const HeroSlides = lazy(() => content().then((m) => ({ default: m.HeroSlides })));
 const HomepageBuilder = lazy(() => content().then((m) => ({ default: m.HomepageBuilder })));
 const WebsitePages = lazy(() => content().then((m) => ({ default: m.WebsitePages })));
+const BlogPosts = lazy(() => content().then((m) => ({ default: m.BlogPosts })));
 const NavigationMenu = lazy(() => content().then((m) => ({ default: m.NavigationMenu })));
 const ops = () => import('@/pages/admin/OpsScreens');
 const Dashboard = lazy(() => ops().then((m) => ({ default: m.Dashboard })));
 const WebsiteSettings = lazy(() => ops().then((m) => ({ default: m.WebsiteSettings })));
 const Reports = lazy(() => import('@/pages/admin/Reports'));
+const blog = () => import('@/pages/Blog');
+const BlogList = lazy(() => blog().then((m) => ({ default: m.BlogList })));
+const BlogPostPage = lazy(() => blog().then((m) => ({ default: m.BlogPostPage })));
 const SeoSettings = lazy(() => ops().then((m) => ({ default: m.SeoSettings })));
 const Reviews = lazy(() => ops().then((m) => ({ default: m.Reviews })));
 const Newsletter = lazy(() => ops().then((m) => ({ default: m.Newsletter })));
@@ -120,6 +124,8 @@ export default function App() {
         </Route>
 
         {/* Information */}
+        <Route path="blog" element={<BlogList />} />
+        <Route path="blog/:slug" element={<BlogPostPage />} />
         <Route path="about" element={<AboutPage />} />
         <Route path="contact" element={<ContactPage />} />
         <Route path="faq" element={<FaqPage />} />
@@ -184,6 +190,9 @@ export default function App() {
           </Route>
           <Route element={<RequireSection section="seo-settings" />}>
             <Route path="seo-settings" element={<SeoSettings />} />
+          </Route>
+          <Route element={<RequireSection section="blog" />}>
+            <Route path="blog" element={<BlogPosts />} />
           </Route>
           <Route element={<RequireSection section="reports" />}>
             <Route path="reports" element={<Reports />} />

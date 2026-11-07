@@ -2,7 +2,7 @@
 // so Cloudflare Pages Functions write these tags into the HTML before it is sent. Pure functions: unit-tested.
 import { absoluteUrl, canonicalUrl, clip } from './seo';
 
-export interface ShareMeta { title: string; description: string; image: string; url: string; type: 'website' | 'product'; priceAmount?: string }
+export interface ShareMeta { title: string; description: string; image: string; url: string; type: 'website' | 'product' | 'article'; priceAmount?: string }
 
 export const escAttr = (s: string) => s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
@@ -59,3 +59,29 @@ export function shareLinks(url: string, text: string) {
     facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`,
   };
 }
+
+/** Any other public page: shop, a category, a collection, a blog post, a policy page. */
+export function pageShareMeta(
+  p: { path: string; title: string; description?: string | null; image?: string | null; type?: ShareMeta['type'] },
+  origin: string,
+  d: Defaults,
+): ShareMeta {
+  return {
+    title: `${p.title.trim()} — ${d.storeName}`,
+    description: clip(p.description, 200) || d.description,
+    image: absoluteUrl(origin, p.image) || d.image,
+    url: canonicalUrl(origin, p.path),
+    type: p.type ?? 'website',
+  };
+}
+
+/** Fixed pages that exist even with an empty database. */
+export const FIXED_PAGES: Record<string, { title: string; description: string }> = {
+  shop: { title: 'Shop All', description: "Browse all men's and women's fashion. Cash on Delivery across Bangladesh." },
+  women: { title: "Women's Fashion", description: 'Saree, three piece, kurti, tops and more. Cash on Delivery across Bangladesh.' },
+  men: { title: "Men's Fashion", description: 'T-shirts, polo, panjabi, jeans and more. Cash on Delivery across Bangladesh.' },
+  contact: { title: 'Contact Us', description: 'Questions about an order or a product? Send us a message.' },
+  blog: { title: 'Blog', description: 'Style notes, guides and news.' },
+};
+/** Pages whose title and text are edited in Admin > Website Pages. */
+export const DB_PAGES = ['about', 'faq', 'privacy-policy', 'terms-and-conditions', 'return-refund-policy', 'shipping-policy'] as const;

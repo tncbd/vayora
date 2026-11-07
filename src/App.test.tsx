@@ -12,7 +12,7 @@ const routes = [
   '/login', '/register', '/forgot-password', '/account', '/account/orders',
   '/account/wishlist', '/account/addresses',
   '/about', '/contact', '/faq', '/privacy-policy', '/terms-and-conditions',
-  '/return-refund-policy', '/shipping-policy',
+  '/return-refund-policy', '/shipping-policy', '/blog', '/blog/some-post',
 ];
 
 /** Routes are lazy-loaded, so wait until every chunk has resolved before reading the HTML. */

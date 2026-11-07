@@ -2,12 +2,12 @@ import { describe, expect, it } from 'vitest';
 import { ADMIN_SECTIONS, canAccess, resolveGuard, safeRedirect, sectionsFor } from './roles';
 
 describe('role -> section access', () => {
-  it('lists all 27 admin sidebar sections from the brief', () => {
-    expect(ADMIN_SECTIONS).toHaveLength(27);
+  it('lists all 28 admin sidebar sections (the original brief plus Contact Messages, SEO Settings and Blog)', () => {
+    expect(ADMIN_SECTIONS).toHaveLength(28);
   });
 
   it('super admin sees everything', () => {
-    expect(sectionsFor(['super_admin'])).toHaveLength(27);
+    expect(sectionsFor(['super_admin'])).toHaveLength(28);
   });
 
   it('only super admin manages admin users and roles', () => {
@@ -63,7 +63,7 @@ describe('safeRedirect', () => {
 describe('implemented sections', () => {
   it('only link finished screens, and every linked path is covered by the same role rules', () => {
     const linked = ADMIN_SECTIONS.filter((s) => s.path);
-    expect(linked.map((s) => s.key).sort()).toEqual(ADMIN_SECTIONS.filter((s) => s.phase <= 9).map((s) => s.key).sort());
+    expect(linked.map((s) => s.key).sort()).toEqual(ADMIN_SECTIONS.filter((s) => s.phase <= 10).map((s) => s.key).sort());
     for (const s of linked) expect(s.path).toMatch(/^\/admin(\/[a-z-]+)?$/);
   });
 });

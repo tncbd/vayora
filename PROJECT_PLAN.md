@@ -136,7 +136,7 @@ The brief requires that all business content be editable from admin and stored i
 - [x] SEO Settings screen: default description, share image, Google Search Console code, optional Google Analytics (loads only when a valid ID is entered; never on admin pages)
 - [x] Migration 13: `admin_sales_report()`; Reports screen with presets/custom dates, summary, daily chart, status split, best sellers, districts, coupons, CSV exports
 - [ ] **You:** run `supabase/apply_phase9.sql`; open /sitemap.xml after deploy; add the site in Google Search Console and submit the sitemap
-- Not in this phase: server-side rendering (search engines run the page's JavaScript; Google handles this, social link previews for products and the homepage were added afterwards in 1.0.1 via Pages Functions; other pages show the default preview), email reports
+- Not in this phase: server-side rendering (search engines run the page's JavaScript; Google handles this, social link previews were added afterwards in 1.0.1 and 1.1.0 via Pages Functions; Blog was added in 1.1.0), email reports
 ### PHASE 10 — Security audit, testing, documentation, deployment prep  ✅ (pending your approval; migration not yet applied live)
 - [x] Migration 14: throttling (`rate_limits`, tracking and coupon limits), anon privileges reduced to public tables, trigger/internal functions closed to RPC
 - [x] `audit.test.ts` locks in RLS, function grants and throttling

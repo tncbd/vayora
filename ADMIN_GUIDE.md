@@ -48,8 +48,11 @@ How it works: when the advance is on and delivery is not free, the customer plac
 - After deploying, open `https://your-site/sitemap.xml`; in Google Search Console add your site and submit that link.
 - **Reports**: pick a period (Bangladesh time). Sales exclude cancelled, returned and refunded orders. Export daily sales, best sellers or districts as CSV.
 
+## Blog
+Admin > Blog: add a post with a title, address (slug), cover photo, short summary and text (`##` starts a heading). Tick **Published** to show it; set a future **Publish date** to schedule it. The Blog link appears in the footer after the first published post, or add it yourself in Navigation Menu. The cover photo and summary are what Facebook and WhatsApp show when the article link is shared.
+
 ## Sharing products on Facebook and WhatsApp
-Every product page has Share buttons. A pasted product link shows that product's first photo, name, short description and price. Upload a clear main photo (landscape or square, at least 600 px wide) as the first image. The homepage link uses the Share image from SEO Settings. After you change a photo, Facebook may keep the old preview for a while: paste the link into the Facebook Sharing Debugger and press "Scrape Again". Other pages (shop, categories) show the default preview.
+Every product page has Share buttons. A pasted product link shows that product's first photo, name, short description and price. Upload a clear main photo (landscape or square, at least 600 px wide) as the first image. The homepage link uses the Share image from SEO Settings. After you change a photo, Facebook may keep the old preview for a while: paste the link into the Facebook Sharing Debugger and press "Scrape Again". Shop, women, men, categories, collections, blog posts and the About/policy pages also get their own preview (category and collection photos come from their own image field; otherwise the Share image is used).
 
 ## Orders (Phase 7)
 **Admin > Orders** (Super Admin, Admin, Order Manager). Open an order to see items, customer, address, payment and the full status history.

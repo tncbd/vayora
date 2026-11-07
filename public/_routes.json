@@ -1,0 +1,5 @@
+{
+  "version": 1,
+  "include": ["/", "/product/*", "/category/*", "/collections/*", "/blog", "/blog/*", "/shop", "/women", "/men", "/contact", "/about", "/faq", "/privacy-policy", "/terms-and-conditions", "/return-refund-policy", "/shipping-policy", "/sitemap.xml", "/robots.txt"],
+  "exclude": []
+}

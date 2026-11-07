@@ -46,3 +46,22 @@ export async function fetchPage(slug: string): Promise<Row | null> {
   if (error) throw error;
   return data;
 }
+
+export interface BlogPost { slug: string; title: string; excerpt: string; content: string; coverImage: string; date: string; seoTitle: string; seoDescription: string }
+const toPost = (r: Row): BlogPost => ({
+  slug: r.slug, title: r.title, excerpt: r.excerpt ?? '', content: r.content ?? '', coverImage: r.cover_image_url ?? '',
+  date: r.published_at ?? r.created_at ?? '', seoTitle: r.seo_title ?? '', seoDescription: r.seo_description ?? '',
+});
+/** Published posts, newest first (RLS hides drafts and future-dated posts from visitors). */
+export async function fetchBlogPosts(limit = 50): Promise<BlogPost[]> {
+  if (!supabase) return [];
+  const { data, error } = await supabase.from('blog_posts').select('slug, title, excerpt, content, cover_image_url, published_at, created_at, seo_title, seo_description').order('published_at', { ascending: false, nullsFirst: false }).order('created_at', { ascending: false }).limit(limit);
+  if (error) throw error;
+  return (data ?? []).map(toPost);
+}
+export async function fetchBlogPost(slug: string): Promise<BlogPost | null> {
+  if (!supabase) return null;
+  const { data, error } = await supabase.from('blog_posts').select('slug, title, excerpt, content, cover_image_url, published_at, created_at, seo_title, seo_description').eq('slug', slug).maybeSingle();
+  if (error) throw error;
+  return data ? toPost(data) : null;
+}

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { STATIC_PATHS, buildSitemap, robotsTxt, slugOk } from './sitemap';
+import { STATIC_PATHS, blogEntries, buildSitemap, robotsTxt, slugOk } from './sitemap';
 
 describe('sitemap', () => {
   it('lists pages with absolute urls, skips duplicates and bad paths', () => {
@@ -18,5 +18,11 @@ describe('sitemap', () => {
     const r = robotsTxt('https://s.example/');
     for (const p of ['/admin', '/account', '/checkout', '/cart']) expect(r).toContain(`Disallow: ${p}`);
     expect(r).toContain('Sitemap: https://s.example/sitemap.xml');
+  });
+  it('lists blog posts only when there are some, with safe slugs', () => {
+    expect(blogEntries([])).toEqual([]);
+    expect(blogEntries([{ slug: 'bad slug' }])).toEqual([]);
+    const e = blogEntries([{ slug: 'eid-guide', published_at: '2026-11-01T00:00:00Z' }, { slug: '../x' }]);
+    expect(e.map((x) => x.path)).toEqual(['/blog', '/blog/eid-guide']);
   });
 });

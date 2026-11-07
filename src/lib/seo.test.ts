@@ -52,7 +52,7 @@ describe('seo helpers', () => {
   });
 });
 
-import { escAttr, productShareMeta, shareLinks, shareTags, siteShareMeta } from './shareMeta';
+import { DB_PAGES, FIXED_PAGES, escAttr, pageShareMeta, productShareMeta, shareLinks, shareTags, siteShareMeta } from './shareMeta';
 const dflt = { storeName: 'VAYORA FASHION', description: 'Default text', image: 'https://cdn.x/default.jpg' };
 describe('share tags for crawlers', () => {
   const row = { slug: 'cotton-tee', name: 'Cotton "Tee" <b>', short_description: 'Soft & light', selling_price: '699', image_url: 'https://cdn.x/tee.jpg' };
@@ -84,5 +84,19 @@ describe('share links', () => {
     const l = shareLinks('https://s/product/a-b', 'Tee & "Co" #1');
     expect(l.whatsapp).toBe('https://wa.me/?text=' + encodeURIComponent('Tee & "Co" #1 https://s/product/a-b'));
     expect(l.facebook).toBe('https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fs%2Fproduct%2Fa-b');
+  });
+});
+
+describe('other pages share tags', () => {
+  it('category/collection/blog previews use their own text and picture', () => {
+    const m = pageShareMeta({ path: '/blog/eid-guide', title: 'Eid <guide>', description: '## Heading\nBody text', image: '/cover.jpg', type: 'article' }, 'https://s', dflt);
+    expect(m).toMatchObject({ url: 'https://s/blog/eid-guide', image: 'https://s/cover.jpg', type: 'article', title: 'Eid <guide> — VAYORA FASHION' });
+    expect(shareTags(m, 'V')).toContain('Eid &lt;guide&gt;');
+  });
+  it('falls back to the shop description and image', () => {
+    expect(pageShareMeta({ path: '/shop', title: 'Shop' }, 'https://s', dflt)).toMatchObject({ description: 'Default text', image: 'https://cdn.x/default.jpg' });
+  });
+  it('fixed pages never collide with app-only routes', () => {
+    for (const k of [...Object.keys(FIXED_PAGES), ...DB_PAGES]) expect(['cart', 'checkout', 'login', 'register', 'account', 'admin', 'track-order', 'search']).not.toContain(k);
   });
 });

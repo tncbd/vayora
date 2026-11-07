@@ -24,6 +24,12 @@ export function buildSitemap(origin: string, entries: readonly SitemapEntry[]): 
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.join('\n')}\n</urlset>\n`;
 }
 
+/** Blog pages for the sitemap: the index only when at least one post is published. */
+export const blogEntries = (posts: { slug: unknown; published_at?: string | null; created_at?: string | null }[]): SitemapEntry[] => {
+  const ok = posts.filter((p): p is typeof p & { slug: string } => slugOk(p.slug));
+  return ok.length ? [{ path: '/blog', priority: 0.5 }, ...ok.map((p) => ({ path: `/blog/${p.slug}`, lastmod: p.published_at ?? p.created_at, priority: 0.5 }))] : [];
+};
+
 export const slugOk = (s: unknown): s is string => typeof s === 'string' && /^[a-z0-9]+(-[a-z0-9]+)*$/.test(s);
 
 export function robotsTxt(origin: string): string {

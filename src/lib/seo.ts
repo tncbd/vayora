@@ -36,7 +36,7 @@ export interface PageSeo {
   title?: string;
   description?: string;
   image?: string;
-  type?: 'website' | 'product';
+  type?: 'website' | 'product' | 'article';
   noindex?: boolean;
   jsonLd?: object[];
 }

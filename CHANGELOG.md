@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.0 — Blog and link previews everywhere (2026-11-07)
+- Blog: admin screen (draft, publish, schedule, cover photo), `/blog`, `/blog/:slug`, sitemap entries, footer link once a post is published.
+- Facebook/WhatsApp previews now also work for shop, women, men, categories, collections, blog posts, contact and the About/policy/FAQ pages. `public/_routes.json` limits the Pages Functions to these paths only.
+
 ## 1.0.1 — Link previews (2026-11-07)
 - Facebook, WhatsApp and Telegram previews now show the product's name, photo and price: Cloudflare Pages Functions (`/product/:slug` and `/`) write the tags into the HTML, because those apps do not run JavaScript.
 - Share buttons (WhatsApp, Facebook, Copy link) on every product page.

@@ -43,3 +43,9 @@ export async function withShareTags(env: Env, req: Request, meta: ShareMeta, sto
   h.set('Cache-Control', 'public, max-age=0, must-revalidate'); // page HTML names hashed files: never serve a stale copy after a deploy
   return new Response(out.body, { status: 200, headers: h });
 }
+
+/** Not a page we add tags to (an asset, or an app-only route): let Cloudflare answer exactly as it would without us. */
+export const passThrough = (env: Env, req: Request) => env.ASSETS.fetch(req);
+
+/** The normal app page, untouched (the app itself shows "not found" for an unknown address). */
+export const appPage = (env: Env, req: Request) => env.ASSETS.fetch(new Request(new URL('/', req.url).toString(), { headers: req.headers }));
