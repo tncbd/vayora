@@ -21,6 +21,7 @@ Run SQL in Supabase -> SQL Editor -> New query -> paste -> Run. **Never run a fi
 | Already has Phase 4 applied | `supabase/apply_phase5.sql`, then `supabase/apply_phase6.sql` |
 | Already has Phase 5 applied | `supabase/apply_phase6.sql`, then `supabase/apply_phase7.sql` |
 | Function `notify-order-status` (optional, for status emails) | Edge Functions -> Deploy a new function -> name `notify-order-status` -> paste `supabase/functions/notify-order-status/deploy-single-file.ts` -> Deploy. Same secrets as place-order. |
+| Easiest if unsure: has Phase 6 but not 7 to 11 | `supabase/apply_phase7_to_11.sql` (one file; safe to run again, tested twice in a row) |
 | Already has Phase 10 applied | `supabase/apply_phase11.sql` only (guest screenshot upload rule) |
 | Already has Phase 9 applied | `supabase/apply_phase10.sql` only (security hardening and throttling; changes no data) |
 | Already has Phase 8 applied | `supabase/apply_phase9.sql` only (adds the sales report function; changes no data) |

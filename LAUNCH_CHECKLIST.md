@@ -3,7 +3,7 @@
 Tick each line in order. Nothing here is automatic.
 
 ## 1. Database (Supabase → SQL Editor, each file once, in order)
-- [ ] `apply_phase7.sql`, `apply_phase8.sql`, `apply_phase9.sql`, `apply_phase10.sql`, `apply_phase11.sql` (skip any already applied; see SUPABASE_SETUP.md)
+- [ ] Simplest: run `apply_phase7_to_11.sql` once (safe to repeat). Or one by one: `apply_phase7.sql`, `apply_phase8.sql`, `apply_phase9.sql`, `apply_phase10.sql`, `apply_phase11.sql` (skip any already applied; see SUPABASE_SETUP.md)
 - [ ] Authentication → Providers → Email: turn on "Confirm email"
 - [ ] Authentication → SMTP: set a real sender (Supabase's built-in email is rate-limited and not for production)
 - [ ] Authentication → URL Configuration: Site URL and redirect URLs = your live domain
