@@ -50,3 +50,6 @@ public: product-images, banners, site-assets, review-images · private: payment-
 
 ## Migration 12 (Phase 8): content and admin functions
 `submit_contact_message`, `subscribe_newsletter` (anon + authenticated), `admin_dashboard_stats`, `admin_list_customers`, `admin_list_staff`, `admin_find_user` (staff, role-checked inside), and `audit_content_change` trigger on banners, hero_slides, homepage_sections, pages, menus, site_settings, coupons, delivery_zones, payment_methods, categories and user_roles. No tables or columns changed.
+
+## Migration 13 (Phase 9): reports
+`admin_sales_report(from date, to date)` returns summary, daily, by-status, products, districts and coupons as JSON for Super Admin / Admin. Read-only; no tables changed.

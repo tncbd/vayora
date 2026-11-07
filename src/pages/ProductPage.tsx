@@ -9,6 +9,9 @@ import { colorsOf, defaultSelection, effectivePrice, findVariant, isOptionAvaila
 import { readRecent, rememberProduct } from '@/lib/recentlyViewed';
 import { useAsync } from '@/hooks/useAsync';
 import { usePageTitle } from '@/hooks/usePageTitle';
+import { useSeo } from '@/hooks/useSeo';
+import { useSiteSettings } from '@/context/SiteContentContext';
+import { breadcrumbJsonLd, clip, productJsonLd, siteOrigin } from '@/lib/seo';
 import { ProductGallery } from '@/components/product/ProductGallery';
 import { ProductReviews } from '@/components/product/ProductReviews';
 import { ProductGrid } from '@/components/product/ProductGrid';
@@ -29,6 +32,16 @@ export default function ProductPage() {
   const navigate = useNavigate();
 
   usePageTitle(product ? product.seoTitle || product.name : undefined);
+  const { storeName } = useSiteSettings();
+  useSeo(product ? {
+    description: clip(product.seoDescription || product.shortDescription || product.description, 160),
+    image: product.images[0]?.url ?? product.imageUrl ?? undefined,
+    type: 'product',
+    jsonLd: [
+      productJsonLd(product, siteOrigin(), storeName),
+      breadcrumbJsonLd(siteOrigin(), [{ name: 'Home', path: '/' }, { name: 'Shop', path: '/shop' }, ...(product.categorySlug ? [{ name: product.categoryName ?? 'Category', path: `/category/${product.categorySlug}` }] : []), { name: product.name, path: `/product/${product.slug}` }]),
+    ],
+  } : null);
 
   useEffect(() => {
     if (!product) return;

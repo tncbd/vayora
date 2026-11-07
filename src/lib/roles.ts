@@ -56,10 +56,10 @@ export const ADMIN_SECTIONS: readonly AdminSection[] = [
   { key: 'payment-settings', label: 'Payment Settings', roles: PAY, phase: 6, path: '/admin/payment-settings' },
   { key: 'shipping-settings', label: 'Checkout & Advance Payment', roles: ADM, phase: 6, path: '/admin/shipping-settings' },
   { key: 'website-settings', label: 'Website Settings', roles: ADM, phase: 8, path: '/admin/website-settings' },
-  { key: 'seo-settings', label: 'SEO Settings', roles: ADM, phase: 9 },
+  { key: 'seo-settings', label: 'SEO Settings', roles: ADM, phase: 9, path: '/admin/seo-settings' },
   { key: 'admin-users', label: 'Admin Users', roles: SA, phase: 8, path: '/admin/admin-users' },
   { key: 'roles-permissions', label: 'Roles & Permissions', roles: SA, phase: 8, path: '/admin/roles-permissions' },
-  { key: 'reports', label: 'Reports', roles: ADM, phase: 9 },
+  { key: 'reports', label: 'Reports', roles: ADM, phase: 9, path: '/admin/reports' },
   { key: 'activity-logs', label: 'Activity Logs', roles: ADM, phase: 8, path: '/admin/activity-logs' },
 ];
 

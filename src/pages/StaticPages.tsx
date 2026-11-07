@@ -9,6 +9,8 @@ import { faqs as defaultFaqs } from '@/data/placeholder';
 import { useSiteSettings } from '@/context/SiteContentContext';
 import { useAsync } from '@/hooks/useAsync';
 import { usePageTitle } from '@/hooks/usePageTitle';
+import { useSeo } from '@/hooks/useSeo';
+import { clip } from '@/lib/seo';
 import { fetchPage } from '@/lib/contentApi';
 import { parseContent, parseFaq } from '@/lib/siteContent';
 import { isSupabaseConfigured, supabase } from '@/lib/supabase';
@@ -20,6 +22,7 @@ const PROSE = 'mx-auto max-w-3xl space-y-5 text-[15px] leading-relaxed text-ink 
 function DbPage({ slug, title, fallback }: { slug: string; title: string; fallback: ReactNode }) {
   const { data, loading } = useAsync(() => fetchPage(slug), [slug]);
   usePageTitle(data?.seo_title || data?.title || title);
+  useSeo(data ? { description: data.seo_description || clip(data.content.replace(/^## /gm, ''), 160) } : null);
   if (!isSupabaseConfigured) return <Shell title={title}>{fallback}</Shell>;
   if (loading && data === undefined) return <Shell title={title}><p role="status" className="text-sm text-muted">Loading…</p></Shell>;
   if (!data) return <NotFound />;

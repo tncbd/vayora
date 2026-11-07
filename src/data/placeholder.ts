@@ -21,6 +21,10 @@ export const siteSettings: SiteSettings = {
   footerText:
     'Premium men’s and women’s fashion, delivered to your door across Bangladesh.',
   copyright: `© ${new Date().getFullYear()} VAYORA FASHION. All rights reserved.`,
+  seoDescription: '',
+  ogImage: '',
+  gaId: '',
+  verification: '',
 };
 
 const cat = (

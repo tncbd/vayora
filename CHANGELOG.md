@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.9.0 — Phase 9 (2026-11-07)
+- Route-level code splitting and vendor chunks (first-load app code 832 KB to 80 KB).
+- Dynamic SEO tags, structured data, canonical URLs, noindex for private pages, `/sitemap.xml` and `/robots.txt` functions.
+- SEO Settings screen and optional Google Analytics.
+- Reports screen backed by `admin_sales_report()` with CSV export.
+- `apply_phase9.sql` for projects that already have Phase 8.
+
 ## 0.8.0 — Phase 8 (2026-11-07)
 - Editable website: settings, hero slider, banners, homepage sections, menus and pages managed in admin.
 - Admin dashboard with live numbers; reviews moderation, newsletter export, contact messages, customers, staff roles, activity logs.

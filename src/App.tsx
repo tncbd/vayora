@@ -3,50 +3,77 @@ import { AuthProvider } from '@/context/AuthContext';
 import { WishlistProvider } from '@/context/WishlistContext';
 import { CartProvider } from '@/context/CartContext';
 import { SiteContentProvider } from '@/context/SiteContentContext';
-import Cart from '@/pages/Cart';
-import Checkout from '@/pages/Checkout';
-import OrderConfirmation from '@/pages/OrderConfirmation';
-import ProductPage from '@/pages/ProductPage';
-import Wishlist from '@/pages/account/Wishlist';
+import { Suspense, lazy } from 'react';
 import { RequireAuth, RequireSection, RequireStaff } from '@/components/auth/Guards';
-import Login from '@/pages/auth/Login';
-import Register from '@/pages/auth/Register';
-import ForgotPassword from '@/pages/auth/ForgotPassword';
-import ResetPassword from '@/pages/auth/ResetPassword';
-import AccountLayout from '@/pages/account/AccountLayout';
-import Overview from '@/pages/account/Overview';
-import Profile from '@/pages/account/Profile';
-import Addresses from '@/pages/account/Addresses';
-import AccountOrders from '@/pages/account/Orders';
-import AccountOrderDetail from '@/pages/account/OrderDetail';
-import TrackOrder from '@/pages/TrackOrder';
-import AdminLayout from '@/pages/admin/AdminLayout';
-import { Banners, HeroSlides, HomepageBuilder, WebsitePages, NavigationMenu } from '@/pages/admin/ContentScreens';
-import { Dashboard, WebsiteSettings, Reviews, Newsletter, Messages, Customers, AdminUsers, RolesPermissions, ActivityLogs } from '@/pages/admin/OpsScreens';
-import Categories from '@/pages/admin/Categories';
-import ProductList from '@/pages/admin/ProductList';
-import ProductEdit from '@/pages/admin/ProductEdit';
-import Inventory from '@/pages/admin/Inventory';
-import Coupons from '@/pages/admin/Coupons';
-import AdminOrders from '@/pages/admin/Orders';
-import AdminOrderDetail from '@/pages/admin/OrderDetail';
-import DeliveryZones from '@/pages/admin/DeliveryZones';
-import ShippingSettings from '@/pages/admin/ShippingSettings';
-import PaymentSettings from '@/pages/admin/PaymentSettings';
-import PaymentVerification from '@/pages/admin/PaymentVerification';
 import { Layout } from '@/components/layout/Layout';
 import Home from '@/pages/Home';
-import NotFound from '@/pages/NotFound';
-import { CategoryPage, CollectionPage, GenderPage, SearchPage, ShopAll } from '@/pages/Listing';
-import {
-  AboutPage,
-  ContactPage,
-  FaqPage,
-  PrivacyPage,
-  RefundPage,
-  ShippingPage,
-  TermsPage,
-} from '@/pages/StaticPages';
+
+// Everything except the homepage shell loads on demand, so first paint downloads far less code.
+const Cart = lazy(() => import('@/pages/Cart'));
+const Checkout = lazy(() => import('@/pages/Checkout'));
+const OrderConfirmation = lazy(() => import('@/pages/OrderConfirmation'));
+const ProductPage = lazy(() => import('@/pages/ProductPage'));
+const TrackOrder = lazy(() => import('@/pages/TrackOrder'));
+const NotFound = lazy(() => import('@/pages/NotFound'));
+const Wishlist = lazy(() => import('@/pages/account/Wishlist'));
+const Login = lazy(() => import('@/pages/auth/Login'));
+const Register = lazy(() => import('@/pages/auth/Register'));
+const ForgotPassword = lazy(() => import('@/pages/auth/ForgotPassword'));
+const ResetPassword = lazy(() => import('@/pages/auth/ResetPassword'));
+const AccountLayout = lazy(() => import('@/pages/account/AccountLayout'));
+const Overview = lazy(() => import('@/pages/account/Overview'));
+const Profile = lazy(() => import('@/pages/account/Profile'));
+const Addresses = lazy(() => import('@/pages/account/Addresses'));
+const AccountOrders = lazy(() => import('@/pages/account/Orders'));
+const AccountOrderDetail = lazy(() => import('@/pages/account/OrderDetail'));
+const listing = () => import('@/pages/Listing');
+const CategoryPage = lazy(() => listing().then((m) => ({ default: m.CategoryPage })));
+const CollectionPage = lazy(() => listing().then((m) => ({ default: m.CollectionPage })));
+const GenderPage = lazy(() => listing().then((m) => ({ default: m.GenderPage })));
+const SearchPage = lazy(() => listing().then((m) => ({ default: m.SearchPage })));
+const ShopAll = lazy(() => listing().then((m) => ({ default: m.ShopAll })));
+const info = () => import('@/pages/StaticPages');
+const AboutPage = lazy(() => info().then((m) => ({ default: m.AboutPage })));
+const ContactPage = lazy(() => info().then((m) => ({ default: m.ContactPage })));
+const FaqPage = lazy(() => info().then((m) => ({ default: m.FaqPage })));
+const PrivacyPage = lazy(() => info().then((m) => ({ default: m.PrivacyPage })));
+const RefundPage = lazy(() => info().then((m) => ({ default: m.RefundPage })));
+const ShippingPage = lazy(() => info().then((m) => ({ default: m.ShippingPage })));
+const TermsPage = lazy(() => info().then((m) => ({ default: m.TermsPage })));
+
+// admin (staff only; never downloaded by shoppers)
+const AdminLayout = lazy(() => import('@/pages/admin/AdminLayout'));
+const Categories = lazy(() => import('@/pages/admin/Categories'));
+const ProductList = lazy(() => import('@/pages/admin/ProductList'));
+const ProductEdit = lazy(() => import('@/pages/admin/ProductEdit'));
+const Inventory = lazy(() => import('@/pages/admin/Inventory'));
+const Coupons = lazy(() => import('@/pages/admin/Coupons'));
+const AdminOrders = lazy(() => import('@/pages/admin/Orders'));
+const AdminOrderDetail = lazy(() => import('@/pages/admin/OrderDetail'));
+const DeliveryZones = lazy(() => import('@/pages/admin/DeliveryZones'));
+const ShippingSettings = lazy(() => import('@/pages/admin/ShippingSettings'));
+const PaymentSettings = lazy(() => import('@/pages/admin/PaymentSettings'));
+const PaymentVerification = lazy(() => import('@/pages/admin/PaymentVerification'));
+const content = () => import('@/pages/admin/ContentScreens');
+const Banners = lazy(() => content().then((m) => ({ default: m.Banners })));
+const HeroSlides = lazy(() => content().then((m) => ({ default: m.HeroSlides })));
+const HomepageBuilder = lazy(() => content().then((m) => ({ default: m.HomepageBuilder })));
+const WebsitePages = lazy(() => content().then((m) => ({ default: m.WebsitePages })));
+const NavigationMenu = lazy(() => content().then((m) => ({ default: m.NavigationMenu })));
+const ops = () => import('@/pages/admin/OpsScreens');
+const Dashboard = lazy(() => ops().then((m) => ({ default: m.Dashboard })));
+const WebsiteSettings = lazy(() => ops().then((m) => ({ default: m.WebsiteSettings })));
+const Reports = lazy(() => import('@/pages/admin/Reports'));
+const SeoSettings = lazy(() => ops().then((m) => ({ default: m.SeoSettings })));
+const Reviews = lazy(() => ops().then((m) => ({ default: m.Reviews })));
+const Newsletter = lazy(() => ops().then((m) => ({ default: m.Newsletter })));
+const Messages = lazy(() => ops().then((m) => ({ default: m.Messages })));
+const Customers = lazy(() => ops().then((m) => ({ default: m.Customers })));
+const AdminUsers = lazy(() => ops().then((m) => ({ default: m.AdminUsers })));
+const RolesPermissions = lazy(() => ops().then((m) => ({ default: m.RolesPermissions })));
+const ActivityLogs = lazy(() => ops().then((m) => ({ default: m.ActivityLogs })));
+
+const Fallback = () => <p role="status" className="container-page py-16 text-sm text-muted">Loading…</p>;
 
 export default function App() {
   return (
@@ -54,6 +81,7 @@ export default function App() {
     <WishlistProvider>
     <SiteContentProvider>
     <CartProvider>
+    <Suspense fallback={<Fallback />}>
     <Routes>
       <Route element={<Layout />}>
         <Route index element={<Home />} />
@@ -154,6 +182,12 @@ export default function App() {
           <Route element={<RequireSection section="website-settings" />}>
             <Route path="website-settings" element={<WebsiteSettings />} />
           </Route>
+          <Route element={<RequireSection section="seo-settings" />}>
+            <Route path="seo-settings" element={<SeoSettings />} />
+          </Route>
+          <Route element={<RequireSection section="reports" />}>
+            <Route path="reports" element={<Reports />} />
+          </Route>
           <Route element={<RequireSection section="reviews" />}>
             <Route path="reviews" element={<Reviews />} />
           </Route>
@@ -179,6 +213,7 @@ export default function App() {
         </Route>
       </Route>
     </Routes>
+    </Suspense>
     </CartProvider>
     </SiteContentProvider>
     </WishlistProvider>

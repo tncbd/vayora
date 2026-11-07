@@ -20,6 +20,10 @@ export const DEFAULT_SETTINGS: SiteSettings = {
   announcement: 'Cash on Delivery available all over Bangladesh',
   footerText: 'Premium men’s and women’s fashion, delivered to your door across Bangladesh.',
   copyright: `© ${new Date().getFullYear()} VAYORA FASHION. All rights reserved.`,
+  seoDescription: "VAYORA FASHION: men's and women's fashion in Bangladesh. Style for Everyone. Fashion for Every Moment. Cash on Delivery.",
+  ogImage: '',
+  gaId: '',
+  verification: '',
 };
 
 const str = (v: unknown, fallback: string): string => (typeof v === 'string' ? v.trim() : fallback);
@@ -61,6 +65,10 @@ export function mapSettings(rows: readonly { key: string; value: unknown }[]): S
     announcement: announceOn ? str(m.announcement_text, d.announcement) : '',
     footerText: str(m.footer_text, d.footerText),
     copyright: str(m.copyright_text, d.copyright) || d.copyright,
+    seoDescription: str(m.seo_description, '') || d.seoDescription,
+    ogImage: safeUrl(m.seo_og_image_url),
+    gaId: /^G-[A-Z0-9]{6,12}$/.test(str(m.ga_measurement_id, '')) ? str(m.ga_measurement_id, '') : '',
+    verification: /^[A-Za-z0-9_-]{10,100}$/.test(str(m.google_site_verification, '')) ? str(m.google_site_verification, '') : '',
   };
 }
 

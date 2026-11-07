@@ -131,4 +131,8 @@ export interface SiteSettings {
   announcement: string;
   footerText: string;
   copyright: string;
+  seoDescription: string;
+  ogImage: string;
+  gaId: string;
+  verification: string;
 }

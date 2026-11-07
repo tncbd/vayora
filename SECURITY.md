@@ -50,6 +50,12 @@
 - Content and role changes are written to the activity log (labels only, not values).
 - CSV exports neutralise spreadsheet formulas.
 
+## SEO, analytics and reports (Phase 9)
+- `admin_sales_report()` is Super Admin / Admin only (checked inside the function), range-limited to one year.
+- Analytics loads only for a validated `G-` ID, never on admin pages; the ID, share image and verification code are validated before use, JSON-LD escapes `<`.
+- Sitemap and robots functions read only public data with the anon key; slugs are re-validated before they are written into the XML.
+- Private pages carry `noindex` and are disallowed in robots.txt.
+
 ## Orders (Phase 7)
 - Order status cannot be changed by a direct table update from the browser (trigger); only `set_order_status()` (role-checked, audit-logged), `verify_payment()` and `expire_unpaid_orders()` can, and each keeps stock consistent.
 - Tracking needs the order number AND the phone on the order; it returns no address line, email or internal notes. Failed lookups give one generic message.

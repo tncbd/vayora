@@ -1,7 +1,0 @@
-User-agent: *
-Allow: /
-Disallow: /admin
-Disallow: /account
-Disallow: /checkout
-
-# Sitemap will be generated in Phase 9 once real product data exists.

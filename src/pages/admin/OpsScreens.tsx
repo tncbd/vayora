@@ -102,13 +102,14 @@ export function Dashboard() {
 }
 
 // ---------------- Website settings ----------------
-export function WebsiteSettings() {
+const SEO_GROUP = 'Search & Analytics';
+function SettingsForm({ seo }: { seo: boolean }) {
   const [v, setV] = useState<SettingValues | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [msg, setMsg] = useState<{ kind: 'success' | 'error'; text: string } | null>(null);
   const [saving, setSaving] = useState(false);
   useEffect(() => { api.loadSettings().then(setV).catch((e) => setMsg({ kind: 'error', text: errText(e) })); }, []);
-  const groups = [...new Set(api.SETTING_DEFS.map((d) => d.group))];
+  const groups = [...new Set(api.SETTING_DEFS.map((d) => d.group))].filter((g) => (g === SEO_GROUP) === seo);
   const save = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!v) return;
@@ -120,7 +121,7 @@ export function WebsiteSettings() {
   };
   return (
     <div>
-      <PageTitle title="Website Settings" subtitle="Store name, contact details, social links, announcement bar and footer." />
+      <PageTitle title={seo ? 'SEO Settings' : 'Website Settings'} subtitle={seo ? 'How your shop looks in Google and when shared, plus optional analytics. Product and page titles and descriptions are edited on the product or page itself.' : 'Store name, contact details, social links, announcement bar and footer.'} />
       {msg && <div className="mb-4"><FormMessage kind={msg.kind}>{msg.text}</FormMessage></div>}
       {!v && !msg && <p role="status" className="text-sm text-muted">Loading…</p>}
       {v && (
@@ -149,6 +150,9 @@ export function WebsiteSettings() {
     </div>
   );
 }
+
+export const WebsiteSettings = () => <SettingsForm seo={false} />;
+export const SeoSettings = () => <SettingsForm seo />;
 
 // ---------------- Reviews ----------------
 export function Reviews() {

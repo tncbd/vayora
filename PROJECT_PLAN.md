@@ -129,7 +129,14 @@ The brief requires that all business content be editable from admin and stored i
 - [x] Real Contact page form
 - [ ] **You:** run `supabase/apply_phase7.sql` (if not yet) then `supabase/apply_phase8.sql`, fill Website Settings, upload hero and banner photos
 - Not in this phase: Blog (dropped from scope), email replies to contact messages (reply by phone/WhatsApp/email yourself)
-### PHASE 9 — Analytics, SEO, reports, performance  ⬜
+### PHASE 9 — Analytics, SEO, reports, performance  ✅ (pending your approval; migration not yet applied live)
+- [x] Performance: every page except the homepage shell loads on demand, vendor code in cached chunks. First-load app code 832 KB → 80 KB (+ shared libraries loaded in parallel); admin code is never downloaded by shoppers
+- [x] SEO: per-page title, description, canonical, Open Graph / Twitter tags, Product + Breadcrumb + Organization structured data, `noindex` on cart/checkout/account/admin/search/login pages
+- [x] `/sitemap.xml` (products, categories, collections, pages, built live) and `/robots.txt` as Cloudflare Pages Functions
+- [x] SEO Settings screen: default description, share image, Google Search Console code, optional Google Analytics (loads only when a valid ID is entered; never on admin pages)
+- [x] Migration 13: `admin_sales_report()`; Reports screen with presets/custom dates, summary, daily chart, status split, best sellers, districts, coupons, CSV exports
+- [ ] **You:** run `supabase/apply_phase9.sql`; open /sitemap.xml after deploy; add the site in Google Search Console and submit the sitemap
+- Not in this phase: server-side rendering (search engines run the page's JavaScript; Google handles this, some social previews on WhatsApp/Facebook read only the default tags because they do not run JavaScript. Prerendering would be a later upgrade), email reports
 ### PHASE 10 — Security audit, testing, documentation, deployment prep  ⬜
 
 ## 7. Working Rules

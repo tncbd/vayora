@@ -43,6 +43,11 @@ How it works: when the advance is on and delivery is not free, the customer plac
 - **Reviews**: approve or reject. **Newsletter** and **Customers**: view and export CSV. **Contact Messages**: mark read/resolved.
 - **Admin Users** (Super Admin): add a role by the person's account email (they must sign up first). **Activity Logs**: who changed what.
 
+## SEO, analytics and reports (Phase 9)
+- **SEO Settings**: the default text Google shows, the picture shown when your site is shared, an optional Google Analytics ID (`G-...`) and Search Console code. Leave a field empty to switch it off. Each product and page also has its own search title and description.
+- After deploying, open `https://your-site/sitemap.xml`; in Google Search Console add your site and submit that link.
+- **Reports**: pick a period (Bangladesh time). Sales exclude cancelled, returned and refunded orders. Export daily sales, best sellers or districts as CSV.
+
 ## Orders (Phase 7)
 **Admin > Orders** (Super Admin, Admin, Order Manager). Open an order to see items, customer, address, payment and the full status history.
 - Status moves only forward: Pending review > Confirmed > Processing > Shipped > Out for delivery > Delivered (Returned and Refunded after that). Cancelling needs a reason.

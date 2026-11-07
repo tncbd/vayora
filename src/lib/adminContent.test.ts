@@ -14,6 +14,10 @@ describe('validateSettings', () => {
   it('accepts good values', () => {
     expect(validateSettings({ ...good, contact_phone: '+880 1712-345678', whatsapp_number: '8801712345678', contact_email: 'hi@shop.com', facebook_url: 'https://facebook.com/vayora' })).toEqual({});
   });
+  it('checks analytics and search console codes', () => {
+    expect(Object.keys(validateSettings({ ...good, ga_measurement_id: 'UA-1', google_site_verification: '<meta name=x>' })).sort()).toEqual(['ga_measurement_id', 'google_site_verification']);
+    expect(validateSettings({ ...good, ga_measurement_id: 'G-ABC123XYZ', google_site_verification: 'abcDEF_123-xyzABC' })).toEqual({});
+  });
   it('limits text length', () => expect(validateSettings({ ...good, announcement_text: 'x'.repeat(141) }).announcement_text).toMatch(/Maximum 140/));
 });
 

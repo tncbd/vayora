@@ -14,7 +14,7 @@ const ok = <T,>(res: { data: T; error: { code?: string; message?: string } | nul
 };
 
 // ---------- website settings ----------
-export interface SettingDef { key: string; label: string; kind: 'text' | 'textarea' | 'phone' | 'whatsapp' | 'email' | 'url' | 'bool'; max?: number; hint?: string; group: string }
+export interface SettingDef { key: string; label: string; kind: 'text' | 'textarea' | 'phone' | 'whatsapp' | 'email' | 'url' | 'bool' | 'ga' | 'verification'; max?: number; hint?: string; group: string }
 
 export const SETTING_DEFS: SettingDef[] = [
   { group: 'Store', key: 'store_name', label: 'Store name', kind: 'text', max: 60 },
@@ -29,6 +29,10 @@ export const SETTING_DEFS: SettingDef[] = [
   { group: 'Social', key: 'instagram_url', label: 'Instagram link', kind: 'url' },
   { group: 'Social', key: 'youtube_url', label: 'YouTube link', kind: 'url' },
   { group: 'Social', key: 'tiktok_url', label: 'TikTok link', kind: 'url' },
+  { group: 'Search & Analytics', key: 'seo_description', label: 'Default search description', kind: 'textarea', max: 160, hint: 'Shown under your site name in Google when a page has no description of its own. About 150 characters.' },
+  { group: 'Search & Analytics', key: 'seo_og_image_url', label: 'Share image link', kind: 'url', hint: 'The picture shown when your site is shared on Facebook or WhatsApp. Use a full https:// link to a 1200 x 630 image (upload it under Banners, then copy its link).' },
+  { group: 'Search & Analytics', key: 'ga_measurement_id', label: 'Google Analytics ID', kind: 'ga', hint: 'Looks like G-ABC123XYZ. Leave empty to use no analytics at all.' },
+  { group: 'Search & Analytics', key: 'google_site_verification', label: 'Google Search Console code', kind: 'verification', hint: 'Only the code from the verification tag, not the whole tag. Leave empty if you do not use it.' },
   { group: 'Footer', key: 'footer_text', label: 'Footer text', kind: 'textarea', max: 240 },
   { group: 'Footer', key: 'copyright_text', label: 'Copyright line', kind: 'text', max: 120 },
 ];
@@ -45,6 +49,8 @@ export function validateSettings(v: SettingValues): Record<string, string> {
     else if (d.kind === 'phone' && !/^[0-9+\-() ]{6,30}$/.test(s)) e[d.key] = 'Use digits, spaces, + and - only';
     else if (d.kind === 'whatsapp' && !/^[0-9]{10,15}$/.test(s)) e[d.key] = 'Digits only with country code (10 to 15 digits)';
     else if (d.kind === 'email' && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(s)) e[d.key] = 'Enter a valid email';
+    else if (d.kind === 'ga' && !/^G-[A-Z0-9]{6,12}$/.test(s)) e[d.key] = 'Should look like G-ABC123XYZ';
+    else if (d.kind === 'verification' && !/^[A-Za-z0-9_-]{10,100}$/.test(s)) e[d.key] = 'Paste only the code, without quotes or tags';
     else if (d.kind === 'url' && !(isLink(s) && !s.startsWith('/'))) e[d.key] = 'Enter a full link starting with https://';
   }
   return e;
