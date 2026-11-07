@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.1 — Link previews (2026-11-07)
+- Facebook, WhatsApp and Telegram previews now show the product's name, photo and price: Cloudflare Pages Functions (`/product/:slug` and `/`) write the tags into the HTML, because those apps do not run JavaScript.
+- Share buttons (WhatsApp, Facebook, Copy link) on every product page.
+
 ## 1.0.0 — Phase 10 (2026-11-07)
 - Security audit test suite; anonymous table access reduced to public catalogue/content; trigger functions closed to RPC.
 - Throttling for order tracking and coupon guessing.

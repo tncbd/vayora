@@ -48,6 +48,9 @@ How it works: when the advance is on and delivery is not free, the customer plac
 - After deploying, open `https://your-site/sitemap.xml`; in Google Search Console add your site and submit that link.
 - **Reports**: pick a period (Bangladesh time). Sales exclude cancelled, returned and refunded orders. Export daily sales, best sellers or districts as CSV.
 
+## Sharing products on Facebook and WhatsApp
+Every product page has Share buttons. A pasted product link shows that product's first photo, name, short description and price. Upload a clear main photo (landscape or square, at least 600 px wide) as the first image. The homepage link uses the Share image from SEO Settings. After you change a photo, Facebook may keep the old preview for a while: paste the link into the Facebook Sharing Debugger and press "Scrape Again". Other pages (shop, categories) show the default preview.
+
 ## Orders (Phase 7)
 **Admin > Orders** (Super Admin, Admin, Order Manager). Open an order to see items, customer, address, payment and the full status history.
 - Status moves only forward: Pending review > Confirmed > Processing > Shipped > Out for delivery > Delivered (Returned and Refunded after that). Cancelling needs a reason.

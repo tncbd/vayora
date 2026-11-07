@@ -17,6 +17,8 @@ import { ProductReviews } from '@/components/product/ProductReviews';
 import { ProductGrid } from '@/components/product/ProductGrid';
 import { StarRating } from '@/components/product/StarRating';
 import { WishlistButton } from '@/components/product/WishlistButton';
+import { ShareButtons } from '@/components/product/ShareButtons';
+import { canonicalUrl } from '@/lib/seo';
 import { Button } from '@/components/ui/Button';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { cn } from '@/lib/cn';
@@ -158,6 +160,7 @@ export default function ProductPage() {
             <Button disabled={!canBuy} title={canBuy ? undefined : 'Select an available size and colour'} onClick={() => { cart.add(variant!.id, qty); setAdded(true); }}>Add to Cart</Button>
             <Button variant="outline" disabled={!canBuy} title={canBuy ? undefined : 'Select an available size and colour'} onClick={() => { cart.add(variant!.id, qty); navigate('/checkout'); }}>Buy Now</Button>
           </div>
+          <ShareButtons url={canonicalUrl(siteOrigin(), `/product/${product.slug}`)} title={product.name} />
           {added && (
             <p role="status" className="mt-3 text-sm text-green-800">
               Added to your cart. <Link to="/cart" className="underline">View cart</Link>

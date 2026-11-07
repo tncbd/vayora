@@ -51,3 +51,38 @@ describe('seo helpers', () => {
     expect(ok.gaId).toBe('G-ABC123XYZ');
   });
 });
+
+import { escAttr, productShareMeta, shareLinks, shareTags, siteShareMeta } from './shareMeta';
+const dflt = { storeName: 'VAYORA FASHION', description: 'Default text', image: 'https://cdn.x/default.jpg' };
+describe('share tags for crawlers', () => {
+  const row = { slug: 'cotton-tee', name: 'Cotton "Tee" <b>', short_description: 'Soft & light', selling_price: '699', image_url: 'https://cdn.x/tee.jpg' };
+  it('uses the product name, photo, price and canonical link', () => {
+    const m = productShareMeta(row, 'https://vayora.pages.dev', dflt);
+    expect(m).toMatchObject({ url: 'https://vayora.pages.dev/product/cotton-tee', image: 'https://cdn.x/tee.jpg', type: 'product', priceAmount: '699.00' });
+    expect(m.title).toContain('— VAYORA FASHION');
+  });
+  it('falls back to the shop image and text when the product has none', () => {
+    const m = productShareMeta({ slug: 'a', name: 'A' }, 'https://s', dflt);
+    expect([m.image, m.description, m.priceAmount]).toEqual(['https://cdn.x/default.jpg', 'Default text', undefined]);
+  });
+  it('escapes everything it writes into HTML', () => {
+    const html = shareTags(productShareMeta(row, 'https://s', dflt), 'My "Shop"');
+    expect(html).not.toContain('<b>');
+    expect(html).toContain('Cotton &quot;Tee&quot; &lt;b&gt;');
+    expect(html).toContain('<meta property="product:price:currency" content="BDT">');
+    expect(escAttr('"><script>')).toBe('&quot;&gt;&lt;script&gt;');
+  });
+  it('homepage preview and no-image card type', () => {
+    const m = siteShareMeta('https://s', '/', { ...dflt, image: '', tagline: 'Style for Everyone. More.' });
+    expect(m.title).toBe('VAYORA FASHION — Style for Everyone');
+    expect(shareTags(m, 'V')).toContain('content="summary"');
+  });
+});
+
+describe('share links', () => {
+  it('encode the product name and url', () => {
+    const l = shareLinks('https://s/product/a-b', 'Tee & "Co" #1');
+    expect(l.whatsapp).toBe('https://wa.me/?text=' + encodeURIComponent('Tee & "Co" #1 https://s/product/a-b'));
+    expect(l.facebook).toBe('https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fs%2Fproduct%2Fa-b');
+  });
+});

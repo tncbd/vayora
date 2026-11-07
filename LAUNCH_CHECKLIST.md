@@ -29,6 +29,7 @@ Tick each line in order. Nothing here is automatic.
 - [ ] Move the order through every status; check stock goes down and, after cancelling another order, comes back
 - [ ] Track the order from /track-order; cancel a fresh order from My Orders
 - [ ] Contact form and newsletter sign-up appear in admin
+- [ ] Paste a product link into WhatsApp and the Facebook Sharing Debugger: photo, name and price show
 - [ ] Phone check: homepage, product page, cart and checkout at 360 px width
 
 ## 5. Hosting (Cloudflare)
