@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { getOrder, saveOrderMeta, setOrderStatus, statusChangeSchema, type Row, type StatusChangeInput, type StatusChangeOutput } from '@/lib/adminOrders';
+import { getOrder, notifyCustomer, saveOrderMeta, setOrderStatus, statusChangeSchema, type Row, type StatusChangeInput, type StatusChangeOutput } from '@/lib/adminOrders';
 import { labelOf, nextStatuses } from '@/lib/orderStatus';
 import { METHOD_LABEL } from '@/lib/paymentApi';
 import { formatBDT } from '@/lib/format';
@@ -114,7 +114,7 @@ function StatusForm({ order, onError, onDone }: { order: Row; onError: (t: strin
   const next = watch('status');
   const onSubmit = async (v: StatusChangeOutput) => {
     if (v.status === 'cancelled' && !window.confirm('Cancel this order? Its reserved stock will be released.')) return;
-    try { await setOrderStatus(order.id, v); await onDone(`Status changed to ${labelOf(v.status)}.`); } catch (e) { onError(e instanceof Error ? e.message : 'Could not change the status.'); }
+    try { await setOrderStatus(order.id, v); const emailed = await notifyCustomer(order.id); await onDone(`Status changed to ${labelOf(v.status)}.${emailed ? ' The customer was emailed.' : ''}`); } catch (e) { onError(e instanceof Error ? e.message : 'Could not change the status.'); }
   };
   if (options.length === 0) return <Card title="Change status"><p className="text-sm text-muted">This order is {labelOf(order.status).toLowerCase()}; it cannot be changed further.</p></Card>;
   return (

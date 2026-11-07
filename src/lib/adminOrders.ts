@@ -57,6 +57,16 @@ export async function setOrderStatus(orderId: string, v: StatusChangeOutput): Pr
   if (error) throw new Error(error.message.length < 160 ? error.message : 'Could not change the status.');
 }
 
+/** Asks the notify-order-status function to email the customer about the new status. Best effort: never throws. */
+export async function notifyCustomer(orderId: string): Promise<boolean> {
+  try {
+    const { data, error } = await db().functions.invoke('notify-order-status', { body: { order_id: orderId } });
+    return !error && !!(data as { sent?: boolean } | null)?.sent;
+  } catch {
+    return false;
+  }
+}
+
 export async function saveOrderMeta(orderId: string, v: { courier: string; trackingNumber: string; internalNotes: string }): Promise<void> {
   const { error } = await db().from('orders').update({
     courier_company: v.courier.trim() || null, tracking_number: v.trackingNumber.trim() || null, internal_notes: v.internalNotes.trim() || null,

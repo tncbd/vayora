@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.3.0 — Status emails (2026-11-07)
+- When staff change an order's status in admin (confirmed, shipped, out for delivery, delivered, cancelled), the customer is emailed if they gave an address and Resend is configured. New Edge Function `notify-order-status` (staff only; reads everything from the database).
+
 ## 1.2.0 — Guest screenshots and order emails (2026-11-07)
 - Guests can attach a payment screenshot (private storage, only under their own order token, 3 files per order, JPG/PNG/WebP up to 3 MB, only while payment is awaited).
 - Optional order confirmation email through Resend: sent only when `RESEND_API_KEY` and `EMAIL_FROM` secrets are set; otherwise nothing changes.

@@ -84,5 +84,8 @@ Automated by `supabase/tests/audit.test.ts`; a future migration that widens acce
 - Guests upload only to `guest/<secret order token>/<uuid>.<jpg|png|webp>`; a storage policy calls `guest_can_upload_proof()` which checks the token belongs to an order still awaiting its advance payment and caps 3 files per order. `submit_payment` re-checks that the file exists and belongs to the caller's token. Files are private (payment staff and the owner only).
 - Emails go out from the Edge Function only; the API key is a function secret, never in the browser or in logs. Addresses are validated (no header-injection characters), the body escapes the customer name and contains no tracking token. A failed email never fails the order.
 
+## Status emails (v1.3)
+- `notify-order-status` requires a signed-in user whose role is super_admin, admin or order_manager (checked against `user_roles` with the service key); the request carries only an order id, the status, address and tracking text are read from the database, and only five customer-facing statuses send mail, so it cannot be used to send arbitrary email.
+
 ## Planned rules
 RLS on every sensitive table; server-side recalculation of prices, discounts, delivery and totals; backend-enforced roles; private `payment-proofs` bucket; audit logs; service role key only in Edge Functions.

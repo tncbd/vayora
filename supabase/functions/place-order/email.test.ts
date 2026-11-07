@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { buildOrderEmail, sendOrderEmail, validEmail, type OrderEmailInput } from './email';
+import { buildOrderEmail, buildStatusEmail, emailableStatus, sendOrderEmail, validEmail, type OrderEmailInput } from './email';
 
 const base: OrderEmailInput = { storeName: 'VAYORA FASHION', siteUrl: 'https://vayora.pages.dev/', customerName: 'Rahim <b>Uddin</b>', orderNumber: 'VAY-261107-0001', total: 2060, advanceAmount: 60, codAmount: 2000 };
 
@@ -44,5 +44,24 @@ describe('sendOrderEmail', () => {
   it('never throws when the provider fails', async () => {
     expect(await sendOrderEmail({ apiKey: 'k', from: 'f' }, 'a@b.co', base, (() => Promise.reject(new Error('down'))) as unknown as typeof fetch)).toBe(false);
     expect(await sendOrderEmail({ apiKey: 'k', from: 'f' }, 'a@b.co', base, (() => Promise.resolve(new Response('x', { status: 403 }))) as unknown as typeof fetch)).toBe(false);
+  });
+});
+
+describe('status emails', () => {
+  const i = { storeName: 'VAYORA FASHION', siteUrl: 'https://s', customerName: 'Rahim', orderNumber: 'VAY-1', status: 'shipped', courier: 'Pathao <x>', trackingNumber: 'TRK123', codAmount: 2000 };
+  it('shipped mentions courier, tracking and cash to keep ready', () => {
+    const m = buildStatusEmail(i);
+    expect(m.subject).toBe('Your VAYORA FASHION order VAY-1 has shipped');
+    expect(m.text).toContain('Tracking number: TRK123');
+    expect(m.text).toContain('keep ৳2,000 ready');
+    expect(m.html).toContain('Pathao &lt;x&gt;');
+  });
+  it('delivered has no courier or cash lines', () => {
+    const m = buildStatusEmail({ ...i, status: 'delivered', courier: null, trackingNumber: null });
+    expect(m.text).not.toMatch(/Courier|ready to pay/);
+  });
+  it('only customer-facing statuses are emailed', () => {
+    for (const s of ['confirmed', 'shipped', 'out_for_delivery', 'delivered', 'cancelled']) expect(emailableStatus(s)).toBe(true);
+    for (const s of ['processing', 'pending_order_review', 'returned', 'refunded', '__proto__', 'constructor']) expect(emailableStatus(s)).toBe(false);
   });
 });
