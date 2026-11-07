@@ -30,7 +30,8 @@ export function mapTracked(r: Row): OrderView {
 
 export async function trackOrder(orderNumber: string, phone: string): Promise<OrderView> {
   const { data, error } = await client().rpc('track_order', { p_order_number: orderNumber, p_phone: phone });
-  if (error) throw new Error(error.message.startsWith('No order') ? error.message : 'We could not look up your order. Please try again.');
+  if (error) throw new Error(error.message.startsWith('Too many') ? error.message : 'We could not look up your order. Please try again.');
+  if (!data) throw new Error('No order found for these details.');
   return mapTracked(data as Row);
 }
 

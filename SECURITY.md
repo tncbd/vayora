@@ -60,7 +60,26 @@
 - Order status cannot be changed by a direct table update from the browser (trigger); only `set_order_status()` (role-checked, audit-logged), `verify_payment()` and `expire_unpaid_orders()` can, and each keeps stock consistent.
 - Tracking needs the order number AND the phone on the order; it returns no address line, email or internal notes. Failed lookups give one generic message.
 - Customers can cancel only before confirmation, only their own order (or with its secret token).
-- Throttling of repeated tracking lookups is scheduled for Phase 10.
+- Repeated tracking lookups are throttled (Phase 10, below).
+
+## Final audit and hardening (Phase 10)
+Automated by `supabase/tests/audit.test.ts`; a future migration that widens access makes it fail.
+- Every public table has row-level security. Every SECURITY DEFINER function pins `search_path`.
+- Visitors (anon) may run only an allow-listed set of functions and read only public catalogue/content tables; they have no table privileges on orders, payments, customers, messages, coupons, stock or logs. Signed-in customers cannot call trigger or internal functions.
+- Trigger/internal functions (including `generate_order_number`) are no longer callable as RPC.
+- Throttling: order tracking 10 tries / 10 min per order number and 30 / 10 min per visitor; coupon codes 60 quotes / 10 min per visitor; contact form 5 / hour; order placement per-IP brake in the Edge Function. Counts live in `rate_limits` (no access for clients). A failed tracking lookup returns `null` rather than raising, because an exception would roll the counter back.
+- Browser headers (`public/_headers`): Content-Security-Policy (own scripts, Supabase, Google Analytics only), `frame-ancestors 'none'`, HSTS, nosniff, referrer and permissions policies. Checked in a real browser: no violations.
+- `npm audit`: 0 vulnerabilities (production and dev).
+- Code review greps: no `dangerouslySetInnerHTML`/`eval`/`innerHTML`; external links use `rel="noopener noreferrer"`; no service key in the browser bundle; only `.env.example` is tracked.
+- A regression found by the tests during this phase: re-defining `quote_order` for throttling initially dropped the Phase 6 advance/COD fields; fixed and covered by `payments.test.ts`.
+
+### Known limits (honest list)
+- No CAPTCHA or bot challenge. Turn on Cloudflare "Bot Fight Mode" and, if abuse appears, Turnstile on the order and contact forms.
+- No email/SMS, so there are no order confirmations or password-reset emails beyond what Supabase Auth sends (set up custom SMTP in Supabase before launch).
+- Edge Function still reads the default `SUPABASE_SERVICE_ROLE_KEY`. Supabase is moving projects to new secret keys; switch when your project dashboard says so (the function is the only place that holds it).
+- Guest payment screenshots are not supported (guests submit a Transaction ID).
+- IP for throttling comes from the `x-forwarded-for` header Supabase sets; behind unusual proxies all visitors could share one counter (fail-safe: stricter, not looser).
+- Not independently penetration-tested. Do a test order and test sign-ups before real marketing spend.
 
 ## Planned rules
 RLS on every sensitive table; server-side recalculation of prices, discounts, delivery and totals; backend-enforced roles; private `payment-proofs` bucket; audit logs; service role key only in Edge Functions.

@@ -48,7 +48,7 @@ describe('contact form', () => {
     await expect(send('Rahim', '01712345678', null, 'hi')).rejects.toThrow(/message/);
     await expect(send('Rahim', '01712345678', null, 'x'.repeat(5001))).rejects.toThrow(/message/);
     await expect(rows(`insert into public.contact_messages (name, message) values ('x','hello there')`)).rejects.toThrow();
-    expect(await rows(`select * from public.contact_messages`)).toHaveLength(0); // anon cannot read
+    await expect(rows(`select * from public.contact_messages`)).rejects.toThrow(/permission denied/); // visitors have no access at all
   });
   it('throttles repeated messages from the same contact', async () => {
     await role('anon');
@@ -69,7 +69,7 @@ describe('newsletter', () => {
     expect(s[0].email).toBe('fan@example.com');
     await role('anon');
     await expect(rows(`select public.subscribe_newsletter('not-an-email')`)).rejects.toThrow(/email/);
-    expect(await rows(`select * from public.newsletter_subscribers`)).toHaveLength(0);
+    await expect(rows(`select * from public.newsletter_subscribers`)).rejects.toThrow(/permission denied/); // visitors have no access at all
   });
 });
 

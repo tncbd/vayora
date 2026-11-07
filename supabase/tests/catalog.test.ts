@@ -183,7 +183,7 @@ describe('list_products (storefront)', () => {
     await asAnon();
     const r = await list();
     expect(Object.keys(r[0]).sort()).toEqual(['product_id', 'total_count']);
-    expect(await rows(`select * from public.inventory`)).toHaveLength(0);
+    await expect(rows(`select * from public.inventory`)).rejects.toThrow(/permission denied/); // visitors have no access at all
   });
 
   it('is callable by signed-in users too', async () => {

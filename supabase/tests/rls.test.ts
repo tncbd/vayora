@@ -199,7 +199,7 @@ describe('anonymous visitors', () => {
     await asAnon();
     const v = await rows<{ in_stock: boolean; available_qty: number }>(`select in_stock, available_qty from public.variant_availability`);
     expect(v[0]).toEqual({ in_stock: true, available_qty: 5 });
-    expect(await rows(`select * from public.inventory`)).toHaveLength(0); // exact stock hidden
+    await expect(rows(`select * from public.inventory`)).rejects.toThrow(/permission denied/); // exact stock hidden
   });
 });
 

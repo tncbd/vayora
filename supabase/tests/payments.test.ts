@@ -103,8 +103,7 @@ describe('submit_payment', () => {
     await expect(submit(o, { token: null })).rejects.toThrow(/Order not found/);
     const r = await submit(o);
     expect(r.status).toBe('submitted');
-    const stored = (await rows(`select amount, status, transaction_id, method from public.payments where order_id = $1`, [o.order_id]))[0];
-    expect(stored).toBeUndefined(); // anon cannot read payments table directly
+    await expect(rows(`select amount from public.payments where order_id = $1`, [o.order_id])).rejects.toThrow(/permission denied/); // visitors have no table access
     await role('owner');
     const p = (await rows(`select amount, status, transaction_id, method from public.payments where order_id = $1`, [o.order_id]))[0];
     expect(Number(p.amount)).toBe(80);

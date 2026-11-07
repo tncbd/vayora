@@ -53,3 +53,6 @@ public: product-images, banners, site-assets, review-images · private: payment-
 
 ## Migration 13 (Phase 9): reports
 `admin_sales_report(from date, to date)` returns summary, daily, by-status, products, districts and coupons as JSON for Super Admin / Admin. Read-only; no tables changed.
+
+## Migration 14 (Phase 10): hardening
+New table `rate_limits` (RLS on, no client access). New internal functions `_client_ip()`, `_throttle()`. `track_order` and `quote_order` re-created with throttling (`track_order` now returns null for no match). `anon` loses table privileges except an allow-list of public catalogue/content tables and views; trigger functions lose RPC execute rights.

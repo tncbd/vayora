@@ -137,7 +137,12 @@ The brief requires that all business content be editable from admin and stored i
 - [x] Migration 13: `admin_sales_report()`; Reports screen with presets/custom dates, summary, daily chart, status split, best sellers, districts, coupons, CSV exports
 - [ ] **You:** run `supabase/apply_phase9.sql`; open /sitemap.xml after deploy; add the site in Google Search Console and submit the sitemap
 - Not in this phase: server-side rendering (search engines run the page's JavaScript; Google handles this, some social previews on WhatsApp/Facebook read only the default tags because they do not run JavaScript. Prerendering would be a later upgrade), email reports
-### PHASE 10 — Security audit, testing, documentation, deployment prep  ⬜
+### PHASE 10 — Security audit, testing, documentation, deployment prep  ✅ (pending your approval; migration not yet applied live)
+- [x] Migration 14: throttling (`rate_limits`, tracking and coupon limits), anon privileges reduced to public tables, trigger/internal functions closed to RPC
+- [x] `audit.test.ts` locks in RLS, function grants and throttling
+- [x] Content-Security-Policy and other headers, verified in a browser; `npm audit` clean
+- [x] Final docs: SECURITY (audit + known limits), LAUNCH_CHECKLIST, DEPLOYMENT_GUIDE
+- [ ] **You:** run `supabase/apply_phase10.sql`, then follow LAUNCH_CHECKLIST.md
 
 ## 7. Working Rules
 

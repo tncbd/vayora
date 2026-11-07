@@ -1,4 +1,8 @@
-# Deployment Guide (Netlify)
+# Deployment Guide
+
+The live site uses Cloudflare Pages (section below). Before going public follow [LAUNCH_CHECKLIST.md](LAUNCH_CHECKLIST.md). The Netlify notes that follow are an alternative; note that `/sitemap.xml` and `/robots.txt` are Cloudflare Pages Functions in `functions/`, so Netlify would need equivalents.
+
+## Netlify (alternative)
 
 `netlify.toml` is prepared: build `npm run build`, publish `dist`, Node 22, SPA redirect, security headers.
 

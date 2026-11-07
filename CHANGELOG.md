@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.0.0 — Phase 10 (2026-11-07)
+- Security audit test suite; anonymous table access reduced to public catalogue/content; trigger functions closed to RPC.
+- Throttling for order tracking and coupon guessing.
+- Content-Security-Policy and stricter headers.
+- LAUNCH_CHECKLIST.md and final security notes.
+- `apply_phase10.sql` for projects that already have Phase 9.
+
 ## 0.9.0 — Phase 9 (2026-11-07)
 - Route-level code splitting and vendor chunks (first-load app code 832 KB to 80 KB).
 - Dynamic SEO tags, structured data, canonical URLs, noindex for private pages, `/sitemap.xml` and `/robots.txt` functions.

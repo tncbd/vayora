@@ -155,8 +155,7 @@ describe('wishlist', () => {
     expect(await rows(`select 1 from public.wishlist_items`)).toHaveLength(0);
     await expect(db.query(`insert into public.wishlist_items (wishlist_id, product_id) values ($1,$2)`, [w, tee])).rejects.toThrow(/row-level security/);
     await asAnon();
-    await expect(db.query(`select 1 from public.wishlist_items`)).resolves.toBeDefined();
-    expect(await rows(`select 1 from public.wishlist_items`)).toHaveLength(0);
+    await expect(db.query(`select 1 from public.wishlist_items`)).rejects.toThrow(/permission denied/);
   });
 });
 

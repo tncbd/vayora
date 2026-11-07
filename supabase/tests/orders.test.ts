@@ -196,9 +196,9 @@ describe('track_order', () => {
     expect(t.order_number).toBe(o.order_number);
     expect(t.items).toHaveLength(1);
     expect(t.history.length).toBeGreaterThan(0);
-    await expect(db.query(`select public.track_order($1, $2)`, [o.order_number, '01999999999'])).rejects.toThrow(/No order found/);
-    await expect(db.query(`select public.track_order($1, $2)`, ['VAY-000000-00000', customer.phone])).rejects.toThrow(/No order found/);
-    await expect(db.query(`select public.track_order($1, null)`, [o.order_number])).rejects.toThrow(/No order found/);
+    expect((await db.query<{ t: unknown }>(`select public.track_order($1, $2) as t`, [o.order_number, '01999999999'])).rows[0].t).toBeNull();
+    expect((await db.query<{ t: unknown }>(`select public.track_order($1, $2) as t`, ['VAY-000000-00000', customer.phone])).rows[0].t).toBeNull();
+    expect((await db.query<{ t: unknown }>(`select public.track_order($1, null) as t`, [o.order_number])).rows[0].t).toBeNull();
   });
   it('shows only public history and never leaks private fields', async () => {
     const o = await order();
@@ -218,8 +218,8 @@ describe('track_order', () => {
   });
   it('does not let anonymous users read orders directly', async () => {
     await role('anon');
-    expect(await rows(`select * from public.orders`)).toHaveLength(0);
-    expect(await rows(`select * from public.order_status_history`)).toHaveLength(0);
+    await expect(rows(`select * from public.orders`)).rejects.toThrow(/permission denied/); // visitors have no access at all
+    await expect(rows(`select * from public.order_status_history`)).rejects.toThrow(/permission denied/);
   });
 });
 

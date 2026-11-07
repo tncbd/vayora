@@ -162,7 +162,7 @@ describe('coupons', () => {
   });
   it('coupon rows and ids are never readable by customers', async () => {
     await role('anon');
-    expect(await rows(`select * from public.coupons`)).toHaveLength(0);
+    await expect(rows(`select * from public.coupons`)).rejects.toThrow(/permission denied/); // visitors have no access at all
     await role('authenticated', ALICE);
     expect(await rows(`select * from public.coupons`)).toHaveLength(0);
     const q = await quote([item('tee', 1)], null, 'PCT10');
@@ -279,7 +279,7 @@ describe('place_order', () => {
 
   it('customers cannot read other customers orders or write orders directly', async () => {
     await role('anon');
-    expect(await rows(`select * from public.orders`)).toHaveLength(0);
+    await expect(rows(`select * from public.orders`)).rejects.toThrow(/permission denied/); // visitors have no access at all
     await role('authenticated', ALICE);
     const mine = await rows<{ user_id: string }>(`select user_id from public.orders`);
     expect(mine.length).toBeGreaterThan(0);
