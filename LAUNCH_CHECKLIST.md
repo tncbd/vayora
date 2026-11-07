@@ -3,11 +3,13 @@
 Tick each line in order. Nothing here is automatic.
 
 ## 1. Database (Supabase → SQL Editor, each file once, in order)
-- [ ] `apply_phase7.sql`, `apply_phase8.sql`, `apply_phase9.sql`, `apply_phase10.sql` (skip any already applied; see SUPABASE_SETUP.md)
+- [ ] `apply_phase7.sql`, `apply_phase8.sql`, `apply_phase9.sql`, `apply_phase10.sql`, `apply_phase11.sql` (skip any already applied; see SUPABASE_SETUP.md)
 - [ ] Authentication → Providers → Email: turn on "Confirm email"
 - [ ] Authentication → SMTP: set a real sender (Supabase's built-in email is rate-limited and not for production)
 - [ ] Authentication → URL Configuration: Site URL and redirect URLs = your live domain
-- [ ] Edge Functions → place-order is deployed; secret `ALLOWED_ORIGINS` lists your live domain(s) only
+- [ ] Edge Functions → place-order is deployed with the latest `deploy-single-file.ts` (needed for emails); secret `ALLOWED_ORIGINS` lists your live domain(s) only
+
+- [ ] Optional: order emails (ADMIN_GUIDE.md, "Order emails")
 
 ## 2. First super admin
 - [ ] Register on the site with your own email, confirm it

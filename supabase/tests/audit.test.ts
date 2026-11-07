@@ -39,7 +39,7 @@ describe('schema audit', () => {
     const r = await q<{ proname: string }>(`select distinct proname from pg_proc p join pg_namespace n on n.oid = p.pronamespace
       where n.nspname = 'public' and p.prokind = 'f' and has_function_privilege('anon', p.oid, 'execute') order by 1`);
     expect(r.map((x) => x.proname)).toEqual([
-      'allowed_next_statuses', 'cancel_my_order', 'catalog_facets', 'get_payment_info', 'has_any_role', 'is_staff', 'list_products',
+      'allowed_next_statuses', 'cancel_my_order', 'catalog_facets', 'get_payment_info', 'guest_can_upload_proof', 'has_any_role', 'is_staff', 'list_products',
       'quote_order', 'submit_contact_message', 'submit_payment', 'subscribe_newsletter', 'track_order',
     ]);
   });
@@ -72,6 +72,15 @@ describe('schema audit', () => {
     await role('authenticated');
     await expect(q(`select public._throttle('x', 1, 60)`)).rejects.toThrow(/permission denied/);
     await expect(q(`select * from public.rate_limits`)).rejects.toThrow(/permission denied/);
+  });
+});
+
+describe('storage', () => {
+  it('visitors cannot drop files into any bucket without a valid order token', async () => {
+    await role('anon');
+    for (const [bucket, name] of [['payment-proofs', 'guest/00000000-0000-4000-8000-000000000000/11111111-2222-4333-8444-555555555555.png'], ['payment-proofs', 'anything.png'], ['product-images', 'x.png'], ['banners', 'x.png']]) {
+      await expect(q(`insert into storage.objects (bucket_id, name) values ($1, $2)`, [bucket, name]), `${bucket}/${name}`).rejects.toThrow(/row-level security/);
+    }
   });
 });
 

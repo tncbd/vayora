@@ -80,13 +80,9 @@ export function PaymentPanel({ orderId, token }: { orderId: string; token: strin
               )}
               <Field label="Number you sent from" error={errors.senderNumber?.message}><input className="input" type="tel" inputMode="tel" placeholder="01XXXXXXXXX" {...register('senderNumber')} /></Field>
               <Field label="Transaction ID" error={errors.transactionId?.message}><input className="input uppercase" autoCapitalize="characters" autoComplete="off" {...register('transactionId')} /></Field>
-              {user ? (
-                <Field label="Payment screenshot (optional)" hint="JPG, PNG or WebP, up to 3 MB.">
-                  <input type="file" accept="image/jpeg,image/png,image/webp" className="block w-full text-sm" onChange={(e) => setProof(e.target.files?.[0] ?? null)} />
-                </Field>
-              ) : (
-                <p className="text-xs text-muted">Screenshots can be attached when you are signed in. Your Transaction ID is enough for us to verify the payment.</p>
-              )}
+              <Field label="Payment screenshot (optional)" hint="JPG, PNG or WebP, up to 3 MB. Your Transaction ID is enough on its own; a screenshot only helps us verify faster.">
+                <input type="file" accept="image/jpeg,image/png,image/webp" className="block w-full text-sm" onChange={(e) => setProof(e.target.files?.[0] ?? null)} />
+              </Field>
               {submitError && <FormMessage kind="error">{submitError}</FormMessage>}
               <Button type="submit" className="w-full" disabled={isSubmitting}>{isSubmitting ? 'Submitting…' : 'Submit Payment Details'}</Button>
             </form>

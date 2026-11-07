@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.2.0 — Guest screenshots and order emails (2026-11-07)
+- Guests can attach a payment screenshot (private storage, only under their own order token, 3 files per order, JPG/PNG/WebP up to 3 MB, only while payment is awaited).
+- Optional order confirmation email through Resend: sent only when `RESEND_API_KEY` and `EMAIL_FROM` secrets are set; otherwise nothing changes.
+- `apply_phase11.sql`; the `place-order` function must be redeployed (`deploy-single-file.ts`).
+
 ## 1.1.0 — Blog and link previews everywhere (2026-11-07)
 - Blog: admin screen (draft, publish, schedule, cover photo), `/blog`, `/blog/:slug`, sitemap entries, footer link once a post is published.
 - Facebook/WhatsApp previews now also work for shop, women, men, categories, collections, blog posts, contact and the About/policy/FAQ pages. `public/_routes.json` limits the Pages Functions to these paths only.

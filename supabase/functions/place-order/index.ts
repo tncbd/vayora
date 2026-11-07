@@ -5,7 +5,10 @@
 //
 // Secrets: SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are provided to Edge Functions automatically.
 // Optional secret ALLOWED_ORIGINS (comma separated, e.g. https://vayora.example,http://localhost:5173).
+// Optional secrets for order confirmation emails (nothing is sent unless both are set):
+//   RESEND_API_KEY, EMAIL_FROM (e.g. "VAYORA FASHION <orders@yourdomain.com>"); also SITE_URL and STORE_NAME if you want to override.
 import { createClient } from 'npm:@supabase/supabase-js@2.45.4';
+import { sendOrderEmail } from './email.ts';
 
 const allowed = (Deno.env.get('ALLOWED_ORIGINS') ?? 'http://localhost:5173').split(',').map((s) => s.trim()).filter(Boolean);
 
@@ -81,6 +84,23 @@ Deno.serve(async (req) => {
     if (error.code === 'P0001') return json(422, { error: error.message }, origin);
     console.error('place_order failed', error.code, error.message);
     return json(500, { error: 'We could not place your order. Please try again.' }, origin);
+  }
+
+  // Confirmation email: optional, best effort, never delays or breaks the order.
+  const order = data as { duplicate?: boolean; order_number: string; total: number; advance_amount: number; cod_amount: number };
+  if (!order.duplicate) {
+    const task = sendOrderEmail(
+      { apiKey: Deno.env.get('RESEND_API_KEY'), from: Deno.env.get('EMAIL_FROM') },
+      (customer as Record<string, unknown>).email,
+      {
+        storeName: Deno.env.get('STORE_NAME') ?? 'VAYORA FASHION',
+        siteUrl: Deno.env.get('SITE_URL') ?? allowed[0],
+        customerName: String((customer as Record<string, unknown>).name ?? ''),
+        orderNumber: order.order_number, total: Number(order.total), advanceAmount: Number(order.advance_amount), codAmount: Number(order.cod_amount),
+      },
+    );
+    // keep the function alive until the email is handed over, without making the customer wait
+    (globalThis as unknown as { EdgeRuntime?: { waitUntil?: (p: Promise<unknown>) => void } }).EdgeRuntime?.waitUntil?.(task);
   }
   return json(200, data, origin);
 });

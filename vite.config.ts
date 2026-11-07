@@ -25,5 +25,5 @@ export default defineConfig({
       },
     },
   },
-  test: { environment: 'node', env: { VITE_SUPABASE_URL: '', VITE_SUPABASE_ANON_KEY: '' }, include: ['src/**/*.test.{ts,tsx}', 'supabase/tests/**/*.test.ts'], testTimeout: 30000 },
+  test: { environment: 'node', env: { VITE_SUPABASE_URL: '', VITE_SUPABASE_ANON_KEY: '' }, include: ['src/**/*.test.{ts,tsx}', 'supabase/tests/**/*.test.ts', 'supabase/functions/**/*.test.ts'], testTimeout: 30000 },
 });

@@ -64,15 +64,15 @@ export function validateProofFile(f: { type: string; size: number }): string | n
   return null;
 }
 
-/** `proof` is only for signed-in customers (guests cannot upload to private storage); it is optional. */
+/** `proof` is optional. Signed-in customers upload under their own folder, guests under guest/<order token>/ (the database checks both). */
 export async function submitPayment(orderId: string, token: string | null, v: PaymentOutput, proof?: File | null, userId?: string | null): Promise<void> {
   const db = client();
   let proofPath: string | null = null;
-  if (proof && userId) {
+  if (proof && (userId || token)) {
     const err = validateProofFile(proof);
     if (err) throw new Error(err);
     const ext = proof.type === 'image/png' ? 'png' : proof.type === 'image/webp' ? 'webp' : 'jpg';
-    proofPath = `${userId}/${orderId}/${crypto.randomUUID()}.${ext}`;
+    proofPath = userId ? `${userId}/${orderId}/${crypto.randomUUID()}.${ext}` : `guest/${token}/${crypto.randomUUID()}.${ext}`;
     const up = await db.storage.from('payment-proofs').upload(proofPath, proof, { contentType: proof.type, upsert: false });
     if (up.error) throw new Error('Could not upload the screenshot. You can submit without it.');
   }

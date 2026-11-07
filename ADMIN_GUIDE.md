@@ -48,6 +48,9 @@ How it works: when the advance is on and delivery is not free, the customer plac
 - After deploying, open `https://your-site/sitemap.xml`; in Google Search Console add your site and submit that link.
 - **Reports**: pick a period (Bangladesh time). Sales exclude cancelled, returned and refunded orders. Export daily sales, best sellers or districts as CSV.
 
+## Order emails (optional)
+Customers who enter an email at checkout get a confirmation if you set up Resend: create a free account at resend.com, verify your sending domain, create an API key, then in Supabase > Edge Functions > Secrets add `RESEND_API_KEY` and `EMAIL_FROM` (for example `VAYORA FASHION <orders@yourdomain.com>`). Without them no email is sent and nothing else changes. Guests can now also attach a payment screenshot; you open it from Payment Verification as before.
+
 ## Blog
 Admin > Blog: add a post with a title, address (slug), cover photo, short summary and text (`##` starts a heading). Tick **Published** to show it; set a future **Publish date** to schedule it. The Blog link appears in the footer after the first published post, or add it yourself in Navigation Menu. The cover photo and summary are what Facebook and WhatsApp show when the article link is shared.
 

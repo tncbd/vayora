@@ -75,11 +75,14 @@ Automated by `supabase/tests/audit.test.ts`; a future migration that widens acce
 
 ### Known limits (honest list)
 - No CAPTCHA or bot challenge. Turn on Cloudflare "Bot Fight Mode" and, if abuse appears, Turnstile on the order and contact forms.
-- No email/SMS, so there are no order confirmations or password-reset emails beyond what Supabase Auth sends (set up custom SMTP in Supabase before launch).
+- Order confirmation emails exist but need your own Resend account (optional). No SMS. Password-reset and sign-up emails come from Supabase Auth (set up custom SMTP in Supabase before launch).
 - Edge Function still reads the default `SUPABASE_SERVICE_ROLE_KEY`. Supabase is moving projects to new secret keys; switch when your project dashboard says so (the function is the only place that holds it).
-- Guest payment screenshots are not supported (guests submit a Transaction ID).
 - IP for throttling comes from the `x-forwarded-for` header Supabase sets; behind unusual proxies all visitors could share one counter (fail-safe: stricter, not looser).
 - Not independently penetration-tested. Do a test order and test sign-ups before real marketing spend.
+
+## Guest screenshots and emails (v1.2)
+- Guests upload only to `guest/<secret order token>/<uuid>.<jpg|png|webp>`; a storage policy calls `guest_can_upload_proof()` which checks the token belongs to an order still awaiting its advance payment and caps 3 files per order. `submit_payment` re-checks that the file exists and belongs to the caller's token. Files are private (payment staff and the owner only).
+- Emails go out from the Edge Function only; the API key is a function secret, never in the browser or in logs. Addresses are validated (no header-injection characters), the body escapes the customer name and contains no tracking token. A failed email never fails the order.
 
 ## Planned rules
 RLS on every sensitive table; server-side recalculation of prices, discounts, delivery and totals; backend-enforced roles; private `payment-proofs` bucket; audit logs; service role key only in Edge Functions.

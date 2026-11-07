@@ -144,6 +144,37 @@ describe('submit_payment', () => {
     expect(r.status).toBe('submitted');
   });
 
+  it('guests can attach a screenshot only under their own order token, only while payment is awaited', async () => {
+    const o = await placeAdvance();
+    const other = await placeAdvance();
+    const file = (tok: string, ext = 'png') => `guest/${tok}/${'11111111-2222-4333-8444-555555555555'}.${ext}`;
+    const ok = async (name: string) => (await rows<{ ok: boolean }>(`select public.guest_can_upload_proof($1) as ok`, [name]))[0].ok;
+    await role('anon');
+    expect(await ok(file(o.tracking_token))).toBe(true);
+    expect(await ok(file(o.tracking_token, 'exe'))).toBe(false);
+    expect(await ok(file('00000000-0000-4000-8000-000000000000'))).toBe(false); // unknown token
+    expect(await ok(`guest/${o.tracking_token}/../x.png`)).toBe(false);
+    expect(await ok(`other/${o.tracking_token}/11111111-2222-4333-8444-555555555555.png`)).toBe(false);
+    // the file must exist and belong to this order's token
+    await expect(submit(o, { txn: txn(), proof: file(o.tracking_token) })).rejects.toThrow(/Invalid payment proof/);
+    await role('owner');
+    await db.query(`insert into storage.objects (bucket_id, name) values ('payment-proofs', $1)`, [file(o.tracking_token)]);
+    await db.query(`insert into storage.objects (bucket_id, name) values ('payment-proofs', $1)`, [file(other.tracking_token)]);
+    await role('anon');
+    await expect(submit(o, { txn: txn(), proof: file(other.tracking_token) })).rejects.toThrow(/Invalid payment proof/);
+    const r = await submit(o, { txn: txn(), proof: file(o.tracking_token) });
+    expect(r.status).toBe('submitted');
+    expect(await ok(file(o.tracking_token))).toBe(false); // payment submitted: no more uploads
+  });
+
+  it('limits guests to 3 files per order', async () => {
+    const o = await placeAdvance();
+    await role('owner');
+    for (const n of ['1', '2', '3']) await db.query(`insert into storage.objects (bucket_id, name) values ('payment-proofs', $1)`, [`guest/${o.tracking_token}/aaaaaaaa-bbbb-4ccc-8ddd-00000000000${n}.jpg`]);
+    await role('anon');
+    expect((await rows<{ ok: boolean }>(`select public.guest_can_upload_proof($1) as ok`, [`guest/${o.tracking_token}/11111111-2222-4333-8444-555555555555.jpg`]))[0].ok).toBe(false);
+  });
+
   it('cannot pay an order that is not waiting for an advance', async () => {
     await role('owner');
     await db.exec(`update public.site_settings set value = 'false' where key = 'delivery_advance_required'`);
